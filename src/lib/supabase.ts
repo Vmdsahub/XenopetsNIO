@@ -70,13 +70,84 @@ const customFetch = async (url: string, options: RequestInit = {}) => {
   );
 };
 
-export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey, {
+// Create a mock supabase client for development
+const createMockClient = () => ({
   auth: {
-    autoRefreshToken: true,
-    persistSession: true,
-    detectSessionInUrl: true,
+    getSession: () => Promise.resolve({ data: { session: null }, error: null }),
+    getUser: () => Promise.resolve({ data: { user: null }, error: null }),
+    signInWithPassword: () =>
+      Promise.resolve({
+        data: {
+          user: {
+            id: "mock-user-123",
+            email: "demo@example.com",
+            user_metadata: { username: "Demo User" },
+          },
+          session: { access_token: "mock-token" },
+        },
+        error: null,
+      }),
+    signUp: () =>
+      Promise.resolve({
+        data: {
+          user: {
+            id: "mock-user-123",
+            email: "demo@example.com",
+            user_metadata: { username: "Demo User" },
+          },
+          session: { access_token: "mock-token" },
+        },
+        error: null,
+      }),
+    signOut: () => Promise.resolve({ error: null }),
+    resetPasswordForEmail: () => Promise.resolve({ error: null }),
+    onAuthStateChange: () => ({
+      data: { subscription: { unsubscribe: () => {} } },
+    }),
   },
+  from: (table: string) => ({
+    select: () => ({
+      eq: () => ({
+        single: () => Promise.resolve({ data: null, error: null }),
+        limit: () => Promise.resolve({ data: [], error: null }),
+        then: (callback: any) => callback({ data: [], error: null }),
+      }),
+      single: () => Promise.resolve({ data: null, error: null }),
+      limit: () => Promise.resolve({ data: [], error: null }),
+      then: (callback: any) => callback({ data: [], error: null }),
+    }),
+    insert: () => ({
+      select: () => ({
+        single: () => Promise.resolve({ data: { id: "mock-id" }, error: null }),
+      }),
+    }),
+    update: () => ({
+      eq: () => Promise.resolve({ data: null, error: null }),
+    }),
+    delete: () => ({
+      eq: () => Promise.resolve({ data: null, error: null }),
+    }),
+    upsert: () => ({
+      select: () => ({
+        single: () => Promise.resolve({ data: { id: "mock-id" }, error: null }),
+      }),
+    }),
+  }),
+  channel: () => ({
+    on: () => ({ subscribe: () => Promise.resolve() }),
+    unsubscribe: () => Promise.resolve(),
+  }),
 });
+
+export const supabase = isMockMode
+  ? (createMockClient() as any)
+  : createClient<Database>(finalUrl, finalKey, {
+      auth: {
+        autoRefreshToken: true,
+        persistSession: true,
+        detectSessionInUrl: true,
+      },
+    });
 
 // Connection test function
 export const testSupabaseConnection = async (): Promise<{
@@ -121,7 +192,7 @@ export const handleSupabaseError = (error: any) => {
     error?.code === "invalid_credentials" ||
     error?.message === "Invalid login credentials"
   ) {
-    return "Email ou senha inválidos. Por favor, verifique suas credenciais.";
+    return "Email ou senha inv��lidos. Por favor, verifique suas credenciais.";
   }
 
   if (error?.code === "PGRST301") {
