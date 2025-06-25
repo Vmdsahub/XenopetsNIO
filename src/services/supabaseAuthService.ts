@@ -100,6 +100,66 @@ export class SupabaseAuthService {
   }
 
   async register(credentials: RegisterCredentials): Promise<AuthResponse> {
+    // Mock mode implementation
+    if (isMockMode) {
+      await new Promise((resolve) => setTimeout(resolve, 500)); // Simulate network delay
+
+      // Validate passwords match
+      if (credentials.password !== credentials.confirmPassword) {
+        return {
+          success: false,
+          message: "Passwords do not match",
+          errors: [
+            { field: "confirmPassword", message: "Passwords do not match" },
+          ],
+        };
+      }
+
+      // Check if user already exists
+      if (mockUsers[credentials.email]) {
+        return {
+          success: false,
+          message: "User already exists",
+          errors: [
+            { field: "email", message: "User with this email already exists" },
+          ],
+        };
+      }
+
+      // Create new mock user
+      const newUser: AuthUser = {
+        id: `user-${Date.now()}`,
+        email: credentials.email,
+        username: credentials.username,
+        phone: credentials.phone,
+        isAdmin: credentials.username.toLowerCase() === "vitoca",
+        isVerified: true,
+        language: this.detectLanguage(),
+        accountScore: 0,
+        daysPlayed: 0,
+        totalXenocoins: 1000,
+        createdAt: new Date(),
+        lastLogin: new Date(),
+        preferences: this.getDefaultPreferences(),
+      };
+
+      // Store in mock database
+      mockUsers[credentials.email] = {
+        password: credentials.password,
+        user: newUser,
+      };
+
+      // Set as current user
+      setCurrentMockUser(newUser);
+
+      return {
+        success: true,
+        user: newUser,
+        token: "mock-token",
+        message: "Registration successful",
+      };
+    }
+
     try {
       // Validate passwords match
       if (credentials.password !== credentials.confirmPassword) {
