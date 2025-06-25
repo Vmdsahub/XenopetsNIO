@@ -1,29 +1,30 @@
-import React, { useState } from 'react';
-import { PetPortrait } from '../Pet/PetPortrait';
-import { PetCreation } from '../Pet/PetCreation';
-import { useGameStore } from '../../store/gameStore';
-import { Heart, Plus, Lock, Award } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Pet } from '../../types/game';
+import React, { useState } from "react";
+import { PetPortrait } from "../Pet/PetPortrait";
+import { EggSelectionScreen } from "../Pet/EggSelectionScreen";
+import { EggHatchingView } from "../Pet/EggHatchingView";
+import { useGameStore } from "../../store/gameStore";
+import { Heart, Plus, Lock, Award } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Pet } from "../../types/game";
 
 export const PetScreen: React.FC = () => {
-  const { 
-    activePet, 
-    pets, 
+  const {
+    activePet,
+    pets,
     user,
     inventory,
-    addNotification, 
+    addNotification,
     setActivePet,
     createPet,
-    setCurrentScreen
+    setCurrentScreen,
   } = useGameStore();
-  
+
   const [showPetCreation, setShowPetCreation] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
   const handleCreatePet = async (petData: Pet) => {
     if (!user) return;
-    
+
     setIsLoading(true);
     try {
       const newPet = await createPet({
@@ -49,33 +50,33 @@ export const PetScreen: React.FC = () => {
         isAlive: true,
         hatchTime: new Date(),
         lastInteraction: new Date(),
-        ownerId: user.id
+        ownerId: user.id,
       });
-      
+
       if (newPet) {
         addNotification({
-          type: 'success',
-          title: 'Pet Criado!',
+          type: "success",
+          title: "Pet Criado!",
           message: `Bem-vindo ${newPet.name} à sua família!`,
-          isRead: false
+          isRead: false,
         });
-        
+
         setShowPetCreation(false);
       } else {
         addNotification({
-          type: 'error',
-          title: 'Erro',
-          message: 'Ocorreu um erro ao criar seu pet.',
-          isRead: false
+          type: "error",
+          title: "Erro",
+          message: "Ocorreu um erro ao criar seu pet.",
+          isRead: false,
         });
       }
     } catch (error) {
-      console.error('Error creating pet:', error);
+      console.error("Error creating pet:", error);
       addNotification({
-        type: 'error',
-        title: 'Erro',
-        message: 'Ocorreu um erro ao criar seu pet.',
-        isRead: false
+        type: "error",
+        title: "Erro",
+        message: "Ocorreu um erro ao criar seu pet.",
+        isRead: false,
       });
     } finally {
       setIsLoading(false);
@@ -85,25 +86,25 @@ export const PetScreen: React.FC = () => {
   const handleSelectPet = (pet: Pet) => {
     setActivePet(pet);
     addNotification({
-      type: 'info',
-      title: 'Pet Selecionado',
+      type: "info",
+      title: "Pet Selecionado",
       message: `${pet.name} agora é seu pet ativo!`,
-      isRead: false
+      isRead: false,
     });
   };
 
   // Check if user can create new pet
   const canCreateNewPet = () => {
     if (!user) return false;
-    
+
     const currentPetCount = pets.length;
     const accountScore = user.accountScore;
-    
+
     if (currentPetCount === 0) return true; // First pet is always allowed
     if (currentPetCount === 1 && accountScore >= 5000) return true; // Second pet at 5000 score
     if (currentPetCount === 2 && accountScore >= 15000) return true; // Third pet at 15000 score
     if (currentPetCount >= 3) return false; // Maximum 3 pets
-    
+
     return false;
   };
 
@@ -118,7 +119,7 @@ export const PetScreen: React.FC = () => {
   if (!activePet && pets.length === 0) {
     return (
       <>
-        <motion.div 
+        <motion.div
           className="max-w-md mx-auto"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -126,24 +127,27 @@ export const PetScreen: React.FC = () => {
           <div className="bg-white rounded-3xl shadow-xl p-8 border border-gray-100 text-center">
             <motion.div
               className="w-24 h-24 bg-gradient-to-br from-purple-500 via-blue-500 to-cyan-500 rounded-full flex items-center justify-center mx-auto mb-6"
-              animate={{ 
+              animate={{
                 rotate: [0, 5, -5, 0],
-                scale: [1, 1.05, 1]
+                scale: [1, 1.05, 1],
               }}
-              transition={{ 
+              transition={{
                 duration: 4,
                 repeat: Infinity,
-                repeatType: "reverse"
+                repeatType: "reverse",
               }}
             >
               <Plus className="w-12 h-12 text-white" />
             </motion.div>
-            
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">Bem-vindo aos Xenopets!</h2>
+
+            <h2 className="text-2xl font-bold text-gray-900 mb-4">
+              Bem-vindo aos Xenopets!
+            </h2>
             <p className="text-gray-600 mb-6">
-              Sua aventura começa agora! Escolha seu primeiro ovo para chocar seu primeiro pet companheiro.
+              Sua aventura começa agora! Escolha seu primeiro ovo para chocar
+              seu primeiro pet companheiro.
             </p>
-            
+
             <motion.button
               onClick={() => setShowPetCreation(true)}
               disabled={isLoading}
@@ -178,7 +182,7 @@ export const PetScreen: React.FC = () => {
   // Show no active pet message if pets exist but none is active
   if (!activePet && pets.length > 0) {
     return (
-      <motion.div 
+      <motion.div
         className="max-w-md mx-auto"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -187,9 +191,13 @@ export const PetScreen: React.FC = () => {
           <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
             <Heart className="w-12 h-12 text-gray-400" />
           </div>
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">Selecione Seu Pet Ativo</h2>
-          <p className="text-gray-600 mb-6">Escolha com qual pet você gostaria de interagir.</p>
-          
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">
+            Selecione Seu Pet Ativo
+          </h2>
+          <p className="text-gray-600 mb-6">
+            Escolha com qual pet você gostaria de interagir.
+          </p>
+
           <div className="space-y-3 mb-6">
             {pets.slice(0, 5).map((pet) => (
               <motion.button
@@ -200,14 +208,20 @@ export const PetScreen: React.FC = () => {
               >
                 <div className="w-12 h-12 bg-gradient-to-br from-purple-400 to-blue-500 rounded-full flex items-center justify-center">
                   <span className="text-white font-bold">
-                    {pet.species === 'Dragon' ? '🐉' : 
-                     pet.species === 'Phoenix' ? '🔥' : 
-                     pet.species === 'Griffin' ? '🦅' : '🦄'}
+                    {pet.species === "Dragon"
+                      ? "🐉"
+                      : pet.species === "Phoenix"
+                        ? "🔥"
+                        : pet.species === "Griffin"
+                          ? "🦅"
+                          : "🦄"}
                   </span>
                 </div>
                 <div className="text-left">
                   <p className="font-semibold text-gray-900">{pet.name}</p>
-                  <p className="text-sm text-gray-600">{pet.species} • Level {pet.level}</p>
+                  <p className="text-sm text-gray-600">
+                    {pet.species} • Level {pet.level}
+                  </p>
                 </div>
               </motion.button>
             ))}
@@ -230,7 +244,10 @@ export const PetScreen: React.FC = () => {
               whileHover={{ scale: 1.01 }}
             >
               <Lock className="w-5 h-5" />
-              <span>Precisa de {getRequiredScoreForNextPet().toLocaleString()} pontos</span>
+              <span>
+                Precisa de {getRequiredScoreForNextPet().toLocaleString()}{" "}
+                pontos
+              </span>
             </motion.div>
           )}
         </div>
@@ -242,9 +259,9 @@ export const PetScreen: React.FC = () => {
     <>
       <div className="max-w-md mx-auto">
         <PetPortrait pet={activePet!} />
-        
+
         {/* Botão de escolher ovo bloqueado */}
-        <motion.div 
+        <motion.div
           className="bg-white rounded-3xl shadow-xl p-6 border border-gray-100 mb-6 text-center"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -261,7 +278,7 @@ export const PetScreen: React.FC = () => {
         </motion.div>
 
         {/* Passe de Temporada */}
-        <motion.div 
+        <motion.div
           className="bg-white rounded-3xl shadow-xl p-6 border border-gray-100 mb-6 text-center"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
