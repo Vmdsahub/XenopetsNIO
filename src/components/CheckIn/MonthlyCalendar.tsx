@@ -248,21 +248,11 @@ export const MonthlyCalendar: React.FC<MonthlyCalendarProps> = ({
           </button>
         </div>
 
-        {/* Month Navigation */}
-        <div className="flex items-center justify-between p-4 border-b border-gray-100">
-          <button
-            onClick={handlePrevMonth}
-            className="p-2 hover:bg-gray-100 rounded-xl transition-colors"
-          />
-
+        {/* Month Header */}
+        <div className="text-center p-4 border-b border-gray-100">
           <h3 className="text-lg font-bold text-gray-900">
             {monthNames[currentMonth]} {currentYear}
           </h3>
-
-          <button
-            onClick={handleNextMonth}
-            className="p-2 hover:bg-gray-100 rounded-xl transition-colors"
-          />
         </div>
 
         {/* Calendar */}
