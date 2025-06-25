@@ -247,6 +247,32 @@ export class SupabaseAuthService {
   }
 
   async login(credentials: LoginCredentials): Promise<AuthResponse> {
+    // Mock mode implementation
+    if (isMockMode) {
+      await new Promise((resolve) => setTimeout(resolve, 500)); // Simulate network delay
+
+      const mockUser = mockUsers[credentials.email];
+
+      if (!mockUser || mockUser.password !== credentials.password) {
+        return {
+          success: false,
+          message: "Email ou senha inválidos. Por favor, tente novamente.",
+          errors: [{ field: "general", message: "Invalid credentials" }],
+        };
+      }
+
+      // Update last login
+      mockUser.user.lastLogin = new Date();
+      setCurrentMockUser(mockUser.user);
+
+      return {
+        success: true,
+        user: mockUser.user,
+        token: "mock-token",
+        message: "Login successful",
+      };
+    }
+
     try {
       const { data, error } = await supabase.auth.signInWithPassword({
         email: credentials.email,
