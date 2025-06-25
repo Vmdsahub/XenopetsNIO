@@ -54,6 +54,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({
           style={{
             color: "rgb(17, 24, 39)",
             fontSize: "45px",
+            fontWeight: "600",
             lineHeight: "36px",
           }}
         >
