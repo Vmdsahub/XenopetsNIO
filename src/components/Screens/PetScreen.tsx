@@ -121,54 +121,10 @@ export const PetScreen: React.FC = () => {
     );
   }
 
+  // Show the active pet
   return (
-    <>
-      <div className="max-w-md mx-auto">
-        <PetPortrait pet={activePet!} />
-
-        {/* Botão de escolher ovo bloqueado */}
-        <motion.div
-          className="bg-white rounded-3xl shadow-xl p-6 border border-gray-100 mb-6 text-center"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
-        >
-          <motion.div
-            className="w-full py-3 bg-gray-100 text-gray-500 rounded-lg flex items-center justify-center space-x-2 cursor-not-allowed"
-            whileHover={{ scale: 1.01 }}
-            title="Você precisa de 5.000 pontos para desbloquear"
-          >
-            <Lock className="w-5 h-5" />
-            <span>Bloqueado (5.000 pts)</span>
-          </motion.div>
-        </motion.div>
-
-        {/* Passe de Temporada */}
-        <motion.div
-          className="bg-white rounded-3xl shadow-xl p-6 border border-gray-100 mb-6 text-center"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4 }}
-        >
-          <motion.div
-            className="w-full py-3 bg-gradient-to-r from-amber-50 to-yellow-50 text-amber-700 border border-amber-200 rounded-lg flex items-center justify-center space-x-2 cursor-pointer"
-            whileHover={{ scale: 1.01 }}
-            title="Passe de Temporada atual"
-          >
-            <Award className="w-5 h-5 text-amber-600" />
-            <span>Passe de Temporada (1)</span>
-          </motion.div>
-        </motion.div>
-      </div>
-
-      <AnimatePresence>
-        {showPetCreation && (
-          <PetCreation
-            onComplete={handleCreatePet}
-            onCancel={() => setShowPetCreation(false)}
-          />
-        )}
-      </AnimatePresence>
-    </>
+    <div className="max-w-md mx-auto">
+      <PetPortrait pet={activePet!} />
+    </div>
   );
 };
