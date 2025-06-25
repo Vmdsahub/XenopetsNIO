@@ -211,7 +211,7 @@ export const EggHatchingView: React.FC<EggHatchingViewProps> = ({
               {/* Cracking Egg */}
               <div className="relative">
                 <motion.div
-                  className={`w-32 h-32 mx-auto rounded-full bg-gradient-to-br ${eggData.gradient} flex items-center justify-center text-6xl shadow-2xl`}
+                  className="w-32 h-32 mx-auto rounded-full bg-gray-50 flex items-center justify-center text-6xl shadow-2xl border border-gray-200"
                   animate={{
                     scale: [1, 1.2, 0.8, 1.1, 0.9, 1],
                     rotate: [-5, 5, -3, 3, 0],
