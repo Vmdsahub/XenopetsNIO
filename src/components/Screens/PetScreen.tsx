@@ -116,30 +116,6 @@ export const PetScreen: React.FC = () => {
               </motion.button>
             ))}
           </div>
-
-          {/* Create New Pet Button */}
-          {canCreateNewPet() ? (
-            <motion.button
-              onClick={() => setShowPetCreation(true)}
-              className="w-full bg-gradient-to-r from-green-600 to-blue-600 text-white py-3 rounded-xl hover:from-green-700 hover:to-blue-700 transition-all font-semibold shadow-lg flex items-center justify-center space-x-2"
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-            >
-              <Plus className="w-5 h-5" />
-              <span>Criar Novo Pet</span>
-            </motion.button>
-          ) : (
-            <motion.div
-              className="w-full bg-gray-100 text-gray-500 py-3 rounded-xl flex items-center justify-center space-x-2 cursor-not-allowed"
-              whileHover={{ scale: 1.01 }}
-            >
-              <Lock className="w-5 h-5" />
-              <span>
-                Precisa de {getRequiredScoreForNextPet().toLocaleString()}{" "}
-                pontos
-              </span>
-            </motion.div>
-          )}
         </div>
       </motion.div>
     );
