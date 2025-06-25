@@ -67,18 +67,18 @@ export const EggHatchingView: React.FC<EggHatchingViewProps> = ({
       species: eggData.species,
       style: "Default",
       personality: "Sanguine",
-      happiness: 8,
-      health: 8,
-      hunger: 7,
-      strength: 5 + (eggData.bonuses.strength || 0),
-      dexterity: 5 + (eggData.bonuses.dexterity || 0),
-      intelligence: 5 + (eggData.bonuses.intelligence || 0),
-      speed: 5 + (eggData.bonuses.speed || 0),
-      attack: 3,
-      defense: 3,
-      precision: 3,
-      evasion: 3,
-      luck: 3 + (eggData.bonuses.luck || 0),
+      happiness: Math.floor(Math.random() * 3) + 7, // 7-9
+      health: Math.floor(Math.random() * 3) + 7, // 7-9
+      hunger: Math.floor(Math.random() * 3) + 6, // 6-8
+      strength: Math.floor(Math.random() * 6) + 3, // 3-8
+      dexterity: Math.floor(Math.random() * 6) + 3, // 3-8
+      intelligence: Math.floor(Math.random() * 6) + 3, // 3-8
+      speed: Math.floor(Math.random() * 6) + 3, // 3-8
+      attack: Math.floor(Math.random() * 4) + 2, // 2-5
+      defense: Math.floor(Math.random() * 4) + 2, // 2-5
+      precision: Math.floor(Math.random() * 4) + 2, // 2-5
+      evasion: Math.floor(Math.random() * 4) + 2, // 2-5
+      luck: Math.floor(Math.random() * 4) + 2, // 2-5
       level: 1,
       conditions: [],
       equipment: {},
