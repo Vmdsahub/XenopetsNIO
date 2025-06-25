@@ -1,18 +1,21 @@
-import React, { useState } from 'react';
-import { motion } from 'framer-motion';
-import { Eye, EyeOff, Mail, Lock, LogIn, AlertCircle } from 'lucide-react';
-import { useAuthStore } from '../../store/authStore';
-import { LoginCredentials } from '../../types/auth';
+import React, { useState } from "react";
+import { motion } from "framer-motion";
+import { Eye, EyeOff, Mail, Lock, LogIn, AlertCircle } from "lucide-react";
+import { useAuthStore } from "../../store/authStore";
+import { LoginCredentials } from "../../types/auth";
 
 interface LoginFormProps {
   onSwitchToRegister: () => void;
   onForgotPassword: () => void;
 }
 
-export const LoginForm: React.FC<LoginFormProps> = ({ onSwitchToRegister, onForgotPassword }) => {
+export const LoginForm: React.FC<LoginFormProps> = ({
+  onSwitchToRegister,
+  onForgotPassword,
+}) => {
   const [credentials, setCredentials] = useState<LoginCredentials>({
-    email: '',
-    password: ''
+    email: "",
+    password: "",
   });
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
@@ -22,7 +25,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSwitchToRegister, onForg
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     clearError();
-    
+
     const success = await login(credentials);
     if (success) {
       // Navigation will be handled by the main App component
@@ -30,7 +33,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSwitchToRegister, onForg
   };
 
   const handleInputChange = (field: keyof LoginCredentials, value: string) => {
-    setCredentials(prev => ({ ...prev, [field]: value }));
+    setCredentials((prev) => ({ ...prev, [field]: value }));
     if (error) clearError();
   };
 
@@ -41,18 +44,20 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSwitchToRegister, onForg
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
     >
-      <div className="bg-white rounded-3xl shadow-2xl p-8 border border-gray-100">
+      <div
+        className="bg-white rounded-3xl shadow-2xl border border-gray-100"
+        style={{ padding: "40px 32px 32px" }}
+      >
         {/* Header */}
-        <div className="text-center mb-8">
-          <motion.div
-            className="w-20 h-20 bg-gradient-to-br from-blue-600 via-purple-600 to-pink-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg"
-            whileHover={{ scale: 1.05, rotate: 5 }}
-            transition={{ type: "spring", stiffness: 300 }}
-          >
-            <span className="text-white text-3xl font-bold">X</span>
-          </motion.div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Bem-vindo de Volta</h1>
-          <p className="text-gray-600">Entre para continuar sua aventura Xenopets</p>
+        <div
+          className="text-center mb-8 pb-2"
+          style={{
+            color: "rgb(17, 24, 39)",
+            fontSize: "45px",
+            lineHeight: "36px",
+          }}
+        >
+          Xenopets
         </div>
 
         {/* Error Message */}
@@ -71,7 +76,10 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSwitchToRegister, onForg
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Email Field */}
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+            <label
+              htmlFor="email"
+              className="block text-sm font-medium text-gray-700 mb-2"
+            >
               Email
             </label>
             <div className="relative">
@@ -80,7 +88,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSwitchToRegister, onForg
                 id="email"
                 type="email"
                 value={credentials.email}
-                onChange={(e) => handleInputChange('email', e.target.value)}
+                onChange={(e) => handleInputChange("email", e.target.value)}
                 className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                 placeholder="Digite seu email"
                 required
@@ -91,16 +99,19 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSwitchToRegister, onForg
 
           {/* Password Field */}
           <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
+            <label
+              htmlFor="password"
+              className="block text-sm font-medium text-gray-700 mb-2"
+            >
               Senha
             </label>
             <div className="relative">
               <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
               <input
                 id="password"
-                type={showPassword ? 'text' : 'password'}
+                type={showPassword ? "text" : "password"}
                 value={credentials.password}
-                onChange={(e) => handleInputChange('password', e.target.value)}
+                onChange={(e) => handleInputChange("password", e.target.value)}
                 className="w-full pl-10 pr-12 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                 placeholder="Digite sua senha"
                 required
@@ -111,7 +122,11 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSwitchToRegister, onForg
                 onClick={() => setShowPassword(!showPassword)}
                 className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
               >
-                {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                {showPassword ? (
+                  <EyeOff className="w-5 h-5" />
+                ) : (
+                  <Eye className="w-5 h-5" />
+                )}
               </button>
             </div>
           </div>
@@ -158,7 +173,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSwitchToRegister, onForg
         {/* Switch to Register */}
         <div className="mt-8 text-center">
           <p className="text-gray-600">
-            Não tem uma conta?{' '}
+            Não tem uma conta?{" "}
             <button
               onClick={onSwitchToRegister}
               className="text-blue-600 hover:text-blue-700 font-medium transition-colors"
@@ -171,7 +186,8 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSwitchToRegister, onForg
         {/* Admin Info */}
         <div className="mt-6 p-4 bg-yellow-50 border border-yellow-200 rounded-xl">
           <p className="text-xs text-yellow-800 text-center">
-            💡 <strong>Dica:</strong> Crie uma conta com o nome "Vitoca" para ter acesso de administrador!
+            💡 <strong>Dica:</strong> Crie uma conta com o nome "Vitoca" para
+            ter acesso de administrador!
           </p>
         </div>
       </div>
