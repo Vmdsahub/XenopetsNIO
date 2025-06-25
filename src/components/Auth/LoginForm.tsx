@@ -173,12 +173,12 @@ export const LoginForm: React.FC<LoginFormProps> = ({
         {/* Switch to Register */}
         <div className="mt-8 text-center">
           <p className="text-gray-600">
-            Não tem uma conta?{" "}
+            Não tem uma conta?
             <button
               onClick={onSwitchToRegister}
               className="text-blue-600 hover:text-blue-700 font-medium transition-colors"
             >
-              Crie uma agora
+              &nbsp;Crie uma agora
             </button>
           </p>
         </div>
