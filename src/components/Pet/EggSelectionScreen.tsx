@@ -72,46 +72,52 @@ export const EggSelectionScreen: React.FC<EggSelectionScreenProps> = ({
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-pink-50 p-4">
-      <div className="max-w-4xl mx-auto">
-        {/* Header */}
-        <div className="text-center mb-8">
-          <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="inline-flex items-center space-x-2 mb-4"
-          >
-            <Sparkles className="w-8 h-8 text-purple-600" />
-            <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-              Escolha seu Ovo
-            </h1>
-            <Sparkles className="w-8 h-8 text-purple-600" />
-          </motion.div>
-          <p className="text-lg text-gray-600 mb-2">
-            Selecione um ovo para ser seu primeiro companheiro
-          </p>
-          <p className="text-sm text-gray-500">
-            Cada ovo contém uma criatura única com habilidades especiais
-          </p>
-        </div>
+    <div className="max-w-md mx-auto">
+      {/* Header Card */}
+      <motion.div
+        className="bg-white rounded-3xl shadow-xl p-6 border border-gray-100 mb-6 text-center"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+      >
+        <h2 className="text-2xl font-bold text-gray-900 mb-2">
+          Escolha seu Ovo
+        </h2>
+        <p className="text-gray-600">
+          Selecione um ovo para começar sua aventura
+        </p>
+      </motion.div>
 
-        {/* Egg Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-          {eggs.map((egg, index) => (
-            <motion.div
-              key={egg.id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.1 }}
-              className={`relative p-6 rounded-3xl border-2 cursor-pointer transition-all duration-300 ${
-                selectedEgg?.id === egg.id
-                  ? "border-purple-500 bg-white shadow-xl scale-105"
-                  : "border-gray-200 bg-white/70 hover:border-purple-300 hover:shadow-lg hover:scale-102"
-              }`}
-              onClick={() => handleEggClick(egg)}
-              whileHover={{ y: -5 }}
-              whileTap={{ scale: 0.98 }}
-            >
+      {/* Egg Grid */}
+      <div className="grid grid-cols-2 gap-4 mb-6">
+        {eggs.map((egg, index) => (
+          <motion.div
+            key={egg.id}
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: index * 0.1 }}
+            className={`bg-white rounded-3xl shadow-xl border-2 cursor-pointer transition-all duration-300 ${
+              selectedEgg?.id === egg.id
+                ? "border-blue-500 ring-2 ring-blue-200"
+                : "border-gray-100 hover:border-gray-300 hover:shadow-2xl"
+            }`}
+            onClick={() => handleEggClick(egg)}
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+          >
+            <div className="p-6 text-center">
+              {/* Egg Portrait */}
+              <div className="w-20 h-20 mx-auto mb-4 bg-gray-50 rounded-full flex items-center justify-center text-4xl">
+                {egg.emoji}
+              </div>
+
+              {/* Egg Name */}
+              <h3 className="text-lg font-bold text-gray-900 mb-1">
+                {egg.name}
+              </h3>
+
+              {/* Species */}
+              <p className="text-sm text-gray-600">{egg.species}</p>
+
               {/* Selection Indicator */}
               <AnimatePresence>
                 {selectedEgg?.id === egg.id && (
@@ -119,108 +125,54 @@ export const EggSelectionScreen: React.FC<EggSelectionScreenProps> = ({
                     initial={{ scale: 0 }}
                     animate={{ scale: 1 }}
                     exit={{ scale: 0 }}
-                    className="absolute -top-2 -right-2 w-8 h-8 bg-purple-500 rounded-full flex items-center justify-center"
+                    className="mt-3"
                   >
-                    <Star className="w-4 h-4 text-white fill-white" />
+                    <div className="w-6 h-6 mx-auto bg-blue-500 rounded-full flex items-center justify-center">
+                      <Star className="w-3 h-3 text-white fill-white" />
+                    </div>
                   </motion.div>
                 )}
               </AnimatePresence>
-
-              {/* Rarity Badge */}
-              <div
-                className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold mb-4 ${getRarityColor(egg.rarity)}`}
-              >
-                {egg.rarity}
-              </div>
-
-              {/* Egg Display */}
-              <div className="text-center mb-4">
-                <div
-                  className={`w-24 h-24 mx-auto rounded-full bg-gradient-to-br ${egg.gradient} flex items-center justify-center text-4xl mb-4 shadow-lg`}
-                >
-                  {egg.emoji}
-                </div>
-                <h3 className="text-xl font-bold text-gray-900 mb-2">
-                  {egg.name}
-                </h3>
-                <p className="text-sm text-gray-600 mb-4">{egg.description}</p>
-              </div>
-
-              {/* Bonuses */}
-              <div className="space-y-2">
-                <h4 className="text-sm font-semibold text-gray-700 mb-2">
-                  Bônus Iniciais:
-                </h4>
-                <div className="grid grid-cols-2 gap-2">
-                  {Object.entries(egg.bonuses).map(([stat, value]) => (
-                    <div
-                      key={stat}
-                      className="flex items-center space-x-2 text-xs"
-                    >
-                      {stat === "strength" && (
-                        <Shield className="w-3 h-3 text-red-500" />
-                      )}
-                      {stat === "intelligence" && (
-                        <Brain className="w-3 h-3 text-blue-500" />
-                      )}
-                      {stat === "dexterity" && (
-                        <Zap className="w-3 h-3 text-yellow-500" />
-                      )}
-                      {stat === "speed" && (
-                        <Zap className="w-3 h-3 text-green-500" />
-                      )}
-                      {stat === "health" && (
-                        <Heart className="w-3 h-3 text-red-500" />
-                      )}
-                      {stat === "luck" && (
-                        <Star className="w-3 h-3 text-purple-500" />
-                      )}
-                      <span className="capitalize text-gray-600">{stat}</span>
-                      <span className="font-bold text-gray-900">+{value}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </motion.div>
-          ))}
-        </div>
-
-        {/* Confirm Button */}
-        <AnimatePresence>
-          {selectedEgg && (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 20 }}
-              className="text-center"
-            >
-              <motion.button
-                onClick={handleConfirmSelection}
-                disabled={isConfirming}
-                className="px-8 py-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold rounded-2xl shadow-xl hover:shadow-2xl transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                {isConfirming ? (
-                  <div className="flex items-center space-x-2">
-                    <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                    <span>Preparando o ovo...</span>
-                  </div>
-                ) : (
-                  <div className="flex items-center space-x-2">
-                    <Heart className="w-5 h-5" />
-                    <span>Confirmar Escolha</span>
-                  </div>
-                )}
-              </motion.button>
-
-              <p className="text-sm text-gray-500 mt-4">
-                Após confirmar, seu ovo levará 3 minutos para chocar
-              </p>
-            </motion.div>
-          )}
-        </AnimatePresence>
+            </div>
+          </motion.div>
+        ))}
       </div>
+
+      {/* Confirm Button */}
+      <AnimatePresence>
+        {selectedEgg && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 20 }}
+            className="bg-white rounded-3xl shadow-xl p-6 border border-gray-100"
+          >
+            <motion.button
+              onClick={handleConfirmSelection}
+              disabled={isConfirming}
+              className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 rounded-xl hover:from-blue-700 hover:to-purple-700 transition-all font-semibold shadow-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+            >
+              {isConfirming ? (
+                <div className="flex items-center space-x-2">
+                  <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  <span>Preparando...</span>
+                </div>
+              ) : (
+                <div className="flex items-center space-x-2">
+                  <Heart className="w-5 h-5" />
+                  <span>Confirmar Escolha</span>
+                </div>
+              )}
+            </motion.button>
+
+            <p className="text-sm text-gray-500 mt-3 text-center">
+              Seu ovo levará 3 minutos para chocar
+            </p>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };
