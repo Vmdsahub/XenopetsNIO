@@ -32,7 +32,7 @@ interface MonthlyCalendarProps {
 export const MonthlyCalendar: React.FC<MonthlyCalendarProps> = ({
   onClose,
 }) => {
-  const [currentDate, setCurrentDate] = useState(new Date());
+  const currentDate = new Date();
   const [selectedDay, setSelectedDay] = useState<number | null>(null);
   const [claimingDay, setClaimingDay] = useState<number | null>(null);
 
