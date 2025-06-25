@@ -353,6 +353,10 @@ export class SupabaseAuthService {
   }
 
   async logout(): Promise<void> {
+    if (isMockMode) {
+      setCurrentMockUser(null);
+      return;
+    }
     await supabase.auth.signOut();
   }
 
