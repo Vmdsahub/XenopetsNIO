@@ -56,66 +56,7 @@ export const PetScreen: React.FC = () => {
 
   // If no pets exist, show egg selection screen
   if (!activePet && pets.length === 0) {
-    return (
-      <>
-        <motion.div
-          className="max-w-md mx-auto"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-        >
-          <div className="bg-white rounded-3xl shadow-xl p-8 border border-gray-100 text-center">
-            <motion.div
-              className="w-24 h-24 bg-gradient-to-br from-purple-500 via-blue-500 to-cyan-500 rounded-full flex items-center justify-center mx-auto mb-6"
-              animate={{
-                rotate: [0, 5, -5, 0],
-                scale: [1, 1.05, 1],
-              }}
-              transition={{
-                duration: 4,
-                repeat: Infinity,
-                repeatType: "reverse",
-              }}
-            >
-              <Plus className="w-12 h-12 text-white" />
-            </motion.div>
-
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">
-              Bem-vindo aos Xenopets!
-            </h2>
-            <p className="text-gray-600 mb-6">
-              Sua aventura começa agora! Escolha seu primeiro ovo para chocar
-              seu primeiro pet companheiro.
-            </p>
-
-            <motion.button
-              onClick={() => setShowPetCreation(true)}
-              disabled={isLoading}
-              className="w-full bg-gradient-to-r from-purple-600 to-blue-600 text-white py-3 rounded-xl hover:from-purple-700 hover:to-blue-700 transition-all font-semibold shadow-lg flex items-center justify-center space-x-2 disabled:opacity-50"
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-            >
-              {isLoading ? (
-                <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-              ) : (
-                <>
-                  <Plus className="w-5 h-5" />
-                  <span>Escolha Seu Primeiro Ovo</span>
-                </>
-              )}
-            </motion.button>
-          </div>
-        </motion.div>
-
-        <AnimatePresence>
-          {showPetCreation && (
-            <PetCreation
-              onComplete={handleCreatePet}
-              onCancel={() => setShowPetCreation(false)}
-            />
-          )}
-        </AnimatePresence>
-      </>
-    );
+    return <EggSelectionScreen onEggSelected={handleEggSelected} />;
   }
 
   // Show no active pet message if pets exist but none is active
