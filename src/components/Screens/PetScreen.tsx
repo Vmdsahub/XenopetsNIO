@@ -23,65 +23,15 @@ export const PetScreen: React.FC = () => {
   const [isHatching, setIsHatching] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleCreatePet = async (petData: Pet) => {
-    if (!user) return;
+  const handleEggSelected = (egg: any) => {
+    setSelectedEgg(egg);
+    setIsHatching(true);
+  };
 
-    setIsLoading(true);
-    try {
-      const newPet = await createPet({
-        name: petData.name,
-        species: petData.species,
-        style: petData.style,
-        personality: petData.personality,
-        happiness: petData.happiness,
-        health: petData.health,
-        hunger: petData.hunger,
-        strength: petData.strength,
-        dexterity: petData.dexterity,
-        intelligence: petData.intelligence,
-        speed: petData.speed,
-        attack: petData.attack,
-        defense: petData.defense,
-        precision: petData.precision,
-        evasion: petData.evasion,
-        luck: petData.luck,
-        level: petData.level,
-        conditions: [],
-        equipment: {},
-        isAlive: true,
-        hatchTime: new Date(),
-        lastInteraction: new Date(),
-        ownerId: user.id,
-      });
-
-      if (newPet) {
-        addNotification({
-          type: "success",
-          title: "Pet Criado!",
-          message: `Bem-vindo ${newPet.name} à sua família!`,
-          isRead: false,
-        });
-
-        setShowPetCreation(false);
-      } else {
-        addNotification({
-          type: "error",
-          title: "Erro",
-          message: "Ocorreu um erro ao criar seu pet.",
-          isRead: false,
-        });
-      }
-    } catch (error) {
-      console.error("Error creating pet:", error);
-      addNotification({
-        type: "error",
-        title: "Erro",
-        message: "Ocorreu um erro ao criar seu pet.",
-        isRead: false,
-      });
-    } finally {
-      setIsLoading(false);
-    }
+  const handleHatchComplete = () => {
+    setSelectedEgg(null);
+    setIsHatching(false);
+    // The egg hatching component will handle pet creation
   };
 
   const handleSelectPet = (pet: Pet) => {
