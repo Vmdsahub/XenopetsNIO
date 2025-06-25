@@ -4,9 +4,19 @@ import { Database } from "../types/database";
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
+// Check if we're in development mode with mock values
+const isMockMode =
+  supabaseUrl?.includes("temp-mock") || !supabaseUrl || !supabaseAnonKey;
+
 if (!supabaseUrl || !supabaseAnonKey) {
-  throw new Error("Missing Supabase environment variables");
+  console.warn(
+    "⚠️ Supabase environment variables not set - running in mock mode",
+  );
 }
+
+// Use mock values if not configured
+const finalUrl = supabaseUrl || "https://temp-mock.supabase.co";
+const finalKey = supabaseAnonKey || "mock-key";
 
 // Create a custom fetch function with better error handling and retry logic
 const customFetch = async (url: string, options: RequestInit = {}) => {
