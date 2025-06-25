@@ -410,6 +410,11 @@ export class SupabaseAuthService {
   }
 
   async getCurrentUser(): Promise<AuthUser | null> {
+    // Mock mode implementation
+    if (isMockMode) {
+      return getCurrentMockUser();
+    }
+
     try {
       const {
         data: { user },
