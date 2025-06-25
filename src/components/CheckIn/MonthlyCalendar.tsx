@@ -3,8 +3,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   X,
   Calendar,
-  ChevronLeft,
-  ChevronRight,
   Coins,
   DollarSign,
   Gift,
