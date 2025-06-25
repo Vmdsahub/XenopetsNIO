@@ -262,9 +262,7 @@ export const MonthlyCalendar: React.FC<MonthlyCalendarProps> = ({
           <button
             onClick={handleNextMonth}
             className="p-2 hover:bg-gray-100 rounded-xl transition-colors"
-          >
-            <ChevronRight className="w-5 h-5 text-gray-600" />
-          </button>
+          />
         </div>
 
         {/* Calendar */}
