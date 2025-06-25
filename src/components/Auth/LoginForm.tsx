@@ -182,14 +182,6 @@ export const LoginForm: React.FC<LoginFormProps> = ({
             </button>
           </p>
         </div>
-
-        {/* Admin Info */}
-        <div className="mt-6 p-4 bg-yellow-50 border border-yellow-200 rounded-xl">
-          <p className="text-xs text-yellow-800 text-center">
-            💡 <strong>Dica:</strong> Crie uma conta com o nome "Vitoca" para
-            ter acesso de administrador!
-          </p>
-        </div>
       </div>
     </motion.div>
   );
