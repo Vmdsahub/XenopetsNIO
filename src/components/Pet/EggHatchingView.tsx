@@ -62,6 +62,8 @@ export const EggHatchingView: React.FC<EggHatchingViewProps> = ({
     ];
     const randomName = petNames[Math.floor(Math.random() * petNames.length)];
 
+    const now = new Date();
+
     const newPet = await createPet({
       name: randomName,
       species: eggData.species,
@@ -84,6 +86,8 @@ export const EggHatchingView: React.FC<EggHatchingViewProps> = ({
       equipment: {},
       isAlive: true,
       isActive: true,
+      hatchTime: now,
+      lastInteraction: now,
       ownerId: user.id,
     });
 
