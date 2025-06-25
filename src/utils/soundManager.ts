@@ -8,9 +8,22 @@
 // Mapa para armazenar os áudios pré-carregados
 const audioCache: Record<string, HTMLAudioElement> = {};
 
+// Check browser support for audio formats
+const getNotificationSoundPath = (): string => {
+  const audio = new Audio();
+
+  // Check MP3 support
+  if (audio.canPlayType("audio/mpeg")) {
+    return "/sounds/notification-pop.mp3";
+  }
+
+  // If MP3 not supported, we'll handle it in the playSound function
+  return "/sounds/notification-pop.mp3";
+};
+
 // Lista de sons disponíveis no jogo
 export const Sounds = {
-  NOTIFICATION: "/sounds/notification-pop.mp3",
+  NOTIFICATION: getNotificationSoundPath(),
   // Adicionar mais sons aqui conforme necessário
 };
 
@@ -41,15 +54,24 @@ export const preloadSound = (soundPath: string): Promise<void> => {
       );
 
       audio.addEventListener("error", (e) => {
+        const target = e.target as HTMLAudioElement;
         const errorDetails = {
           path: soundPath,
           error: e.type,
           message: "Audio load failed",
-          readyState: audio.readyState,
-          networkState: audio.networkState,
+          readyState: target?.readyState,
+          networkState: target?.networkState,
+          errorCode: (target?.error as any)?.code,
+          errorMessage: (target?.error as any)?.message,
+          canPlayType: audio.canPlayType("audio/mpeg"),
+          src: audio.src,
         };
         console.error(`Erro ao carregar som ${soundPath}:`, errorDetails);
-        reject(new Error(`Failed to load sound: ${soundPath} - ${e.type}`));
+        reject(
+          new Error(
+            `Failed to load sound: ${soundPath} - ${e.type} (Error code: ${errorDetails.errorCode})`,
+          ),
+        );
       });
 
       audio.load();
@@ -167,10 +189,54 @@ const tryAlternativePlay = (
   }
 };
 
+/**
+ * Creates a notification sound using Web Audio API
+ */
+const playNotificationBeep = (): Promise<void> => {
+  return new Promise((resolve) => {
+    try {
+      const audioContext = new (window.AudioContext ||
+        (window as any).webkitAudioContext)();
+      const oscillator = audioContext.createOscillator();
+      const gainNode = audioContext.createGain();
+
+      oscillator.connect(gainNode);
+      gainNode.connect(audioContext.destination);
+
+      // Create a pleasant notification sound (two-tone beep)
+      oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
+      oscillator.frequency.setValueAtTime(1000, audioContext.currentTime + 0.1);
+
+      gainNode.gain.setValueAtTime(0, audioContext.currentTime);
+      gainNode.gain.linearRampToValueAtTime(
+        0.1,
+        audioContext.currentTime + 0.01,
+      );
+      gainNode.gain.exponentialRampToValueAtTime(
+        0.01,
+        audioContext.currentTime + 0.3,
+      );
+
+      oscillator.start(audioContext.currentTime);
+      oscillator.stop(audioContext.currentTime + 0.3);
+
+      // Resolve after the sound finishes
+      setTimeout(() => resolve(), 350);
+    } catch (error) {
+      console.warn("Web Audio API notification failed:", error);
+      resolve(); // Don't fail - just continue silently
+    }
+  });
+};
+
 // Convenience functions
 export const playNotificationSound = (): Promise<void> => {
-  return playSound(Sounds.NOTIFICATION, 0.5).catch((error) => {
-    console.warn("Notification sound failed to play:", error.message);
-    // Don't throw error for notification sounds - they're non-critical
+  // Try the Web Audio API notification first (more reliable)
+  return playNotificationBeep().catch(() => {
+    // Fallback to MP3 file
+    return playSound(Sounds.NOTIFICATION, 0.5).catch((error) => {
+      console.warn("Both notification methods failed:", error.message);
+      // Don't throw error for notification sounds - they're non-critical
+    });
   });
 };

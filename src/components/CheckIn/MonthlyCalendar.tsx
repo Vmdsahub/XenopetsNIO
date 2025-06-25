@@ -3,8 +3,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   X,
   Calendar,
-  ChevronLeft,
-  ChevronRight,
   Coins,
   DollarSign,
   Gift,
@@ -32,7 +30,7 @@ interface MonthlyCalendarProps {
 export const MonthlyCalendar: React.FC<MonthlyCalendarProps> = ({
   onClose,
 }) => {
-  const [currentDate, setCurrentDate] = useState(new Date());
+  const currentDate = new Date();
   const [selectedDay, setSelectedDay] = useState<number | null>(null);
   const [claimingDay, setClaimingDay] = useState<number | null>(null);
 
@@ -143,14 +141,6 @@ export const MonthlyCalendar: React.FC<MonthlyCalendarProps> = ({
 
   const weekDays = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
 
-  const handlePrevMonth = () => {
-    setCurrentDate(new Date(currentYear, currentMonth - 1, 1));
-  };
-
-  const handleNextMonth = () => {
-    setCurrentDate(new Date(currentYear, currentMonth + 1, 1));
-  };
-
   const handleDayClick = async (day: number) => {
     if (!isCurrentMonth || day > today) return;
 
@@ -248,25 +238,11 @@ export const MonthlyCalendar: React.FC<MonthlyCalendarProps> = ({
           </button>
         </div>
 
-        {/* Month Navigation */}
-        <div className="flex items-center justify-between p-4 border-b border-gray-100">
-          <button
-            onClick={handlePrevMonth}
-            className="p-2 hover:bg-gray-100 rounded-xl transition-colors"
-          >
-            <ChevronLeft className="w-5 h-5 text-gray-600" />
-          </button>
-
+        {/* Month Header */}
+        <div className="text-center p-4 border-b border-gray-100">
           <h3 className="text-lg font-bold text-gray-900">
             {monthNames[currentMonth]} {currentYear}
           </h3>
-
-          <button
-            onClick={handleNextMonth}
-            className="p-2 hover:bg-gray-100 rounded-xl transition-colors"
-          >
-            <ChevronRight className="w-5 h-5 text-gray-600" />
-          </button>
         </div>
 
         {/* Calendar */}
@@ -417,7 +393,7 @@ export const MonthlyCalendar: React.FC<MonthlyCalendarProps> = ({
                   {getDailyCheckinStreak()} dias
                 </span>
               </div>
-              <div className="text-xs text-gray-500">Hoje: Dia {today}</div>
+              <div className="text-xs text-gray-500" />
             </div>
           )}
         </div>
