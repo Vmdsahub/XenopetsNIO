@@ -44,16 +44,6 @@ export const PetScreen: React.FC = () => {
     });
   };
 
-  const handleSelectPet = (pet: Pet) => {
-    setActivePet(pet);
-    addNotification({
-      type: "info",
-      title: "Pet Selecionado",
-      message: `${pet.name} agora é seu pet ativo!`,
-      isRead: false,
-    });
-  };
-
   // If user is hatching an egg, show the hatching screen
   if (isHatching && selectedEgg) {
     return (
