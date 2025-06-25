@@ -41,15 +41,24 @@ export const preloadSound = (soundPath: string): Promise<void> => {
       );
 
       audio.addEventListener("error", (e) => {
+        const target = e.target as HTMLAudioElement;
         const errorDetails = {
           path: soundPath,
           error: e.type,
           message: "Audio load failed",
-          readyState: audio.readyState,
-          networkState: audio.networkState,
+          readyState: target?.readyState,
+          networkState: target?.networkState,
+          errorCode: (target?.error as any)?.code,
+          errorMessage: (target?.error as any)?.message,
+          canPlayType: audio.canPlayType("audio/mpeg"),
+          src: audio.src,
         };
         console.error(`Erro ao carregar som ${soundPath}:`, errorDetails);
-        reject(new Error(`Failed to load sound: ${soundPath} - ${e.type}`));
+        reject(
+          new Error(
+            `Failed to load sound: ${soundPath} - ${e.type} (Error code: ${errorDetails.errorCode})`,
+          ),
+        );
       });
 
       audio.load();
