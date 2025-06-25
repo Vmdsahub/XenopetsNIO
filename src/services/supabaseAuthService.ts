@@ -361,6 +361,27 @@ export class SupabaseAuthService {
   }
 
   async resetPassword(email: string): Promise<AuthResponse> {
+    // Mock mode implementation
+    if (isMockMode) {
+      await new Promise((resolve) => setTimeout(resolve, 1000)); // Simulate network delay
+
+      if (!mockUsers[email]) {
+        return {
+          success: false,
+          message: "User not found",
+          errors: [
+            { field: "email", message: "No user found with this email" },
+          ],
+        };
+      }
+
+      return {
+        success: true,
+        message:
+          "Password reset link has been sent to your email (mock mode - check console for demo password).",
+      };
+    }
+
     try {
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
         redirectTo: `${window.location.origin}/reset-password`,
