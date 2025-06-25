@@ -8,9 +8,7 @@ interface EggHatchingViewProps {
     id: string;
     name: string;
     emoji: string;
-    gradient: string;
     species: string;
-    bonuses: Record<string, number>;
   };
   onHatchComplete: () => void;
 }
