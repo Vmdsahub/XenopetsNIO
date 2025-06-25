@@ -1,66 +1,39 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Sparkles, Heart, Zap, Brain, Shield, Star, Lock } from "lucide-react";
+import { Heart, Star } from "lucide-react";
 import { useGameStore } from "../../store/gameStore";
 
 interface Egg {
   id: string;
   name: string;
   emoji: string;
-  gradient: string;
-  description: string;
   species: string;
-  rarity: "Common" | "Uncommon" | "Rare" | "Epic";
-  bonuses: {
-    strength?: number;
-    intelligence?: number;
-    dexterity?: number;
-    speed?: number;
-    health?: number;
-    luck?: number;
-  };
 }
 
 const eggs: Egg[] = [
   {
     id: "dragon-egg",
     name: "Ovo de Dragão",
-    emoji: "🥚",
-    gradient: "from-red-500 via-orange-500 to-yellow-500",
-    description: "Um ovo ardente que pulsa com poder ancestral",
+    emoji: "��",
     species: "Dragon",
-    rarity: "Epic",
-    bonuses: { strength: 3, intelligence: 2, health: 1 },
   },
   {
     id: "phoenix-egg",
     name: "Ovo de Fênix",
     emoji: "🔥",
-    gradient: "from-pink-500 via-purple-500 to-indigo-500",
-    description: "Um ovo cintilante envolvido em chamas etéreas",
     species: "Phoenix",
-    rarity: "Rare",
-    bonuses: { speed: 3, health: 2, luck: 1 },
   },
   {
     id: "griffin-egg",
     name: "Ovo de Grifo",
     emoji: "🪶",
-    gradient: "from-blue-500 via-teal-500 to-green-500",
-    description: "Um ovo majestoso com padrões dourados",
     species: "Griffin",
-    rarity: "Rare",
-    bonuses: { dexterity: 3, speed: 2, intelligence: 1 },
   },
   {
     id: "unicorn-egg",
     name: "Ovo de Unicórnio",
     emoji: "🌟",
-    gradient: "from-purple-500 via-pink-500 to-white",
-    description: "Um ovo puro que brilha com magia celestial",
     species: "Unicorn",
-    rarity: "Uncommon",
-    bonuses: { intelligence: 3, luck: 3 },
   },
 ];
 
