@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { Clock, Sparkles, Heart, Star } from "lucide-react";
-import { useGameStore } from "../../store/gameStore";
+import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Clock, Sparkles, Heart, Star } from 'lucide-react';
+import { useGameStore } from '../../store/gameStore';
 
 interface EggHatchingViewProps {
   eggData: {
@@ -13,17 +13,14 @@ interface EggHatchingViewProps {
   onHatchComplete: () => void;
 }
 
-export const EggHatchingView: React.FC<EggHatchingViewProps> = ({
-  eggData,
-  onHatchComplete,
-}) => {
+export const EggHatchingView: React.FC<EggHatchingViewProps> = ({ eggData, onHatchComplete }) => {
   const [timeRemaining, setTimeRemaining] = useState(180); // 3 minutes in seconds
   const [isHatching, setIsHatching] = useState(false);
   const { addNotification, createPet, user } = useGameStore();
 
   useEffect(() => {
     const timer = setInterval(() => {
-      setTimeRemaining((prev) => {
+      setTimeRemaining(prev => {
         if (prev <= 1) {
           setIsHatching(true);
           return 0;
@@ -50,23 +47,14 @@ export const EggHatchingView: React.FC<EggHatchingViewProps> = ({
     if (!user) return;
 
     // Create the pet with random name and the egg's bonuses
-    const petNames = [
-      "Buddy",
-      "Luna",
-      "Max",
-      "Bella",
-      "Charlie",
-      "Ruby",
-      "Oliver",
-      "Stella",
-    ];
+    const petNames = ['Buddy', 'Luna', 'Max', 'Bella', 'Charlie', 'Ruby', 'Oliver', 'Stella'];
     const randomName = petNames[Math.floor(Math.random() * petNames.length)];
 
     const newPet = await createPet({
       name: randomName,
       species: eggData.species,
-      style: "Default",
-      personality: "Sanguine",
+      style: 'Default',
+      personality: 'Sanguine',
       happiness: Math.floor(Math.random() * 3) + 7, // 7-9
       health: Math.floor(Math.random() * 3) + 7, // 7-9
       hunger: Math.floor(Math.random() * 3) + 6, // 6-8
@@ -84,15 +72,15 @@ export const EggHatchingView: React.FC<EggHatchingViewProps> = ({
       equipment: {},
       isAlive: true,
       isActive: true,
-      ownerId: user.id,
+      ownerId: user.id
     });
 
     if (newPet) {
       addNotification({
-        type: "success",
-        title: "🎉 Seu pet nasceu!",
+        type: 'success',
+        title: '🎉 Seu pet nasceu!',
         message: `Parabéns! ${randomName} saiu do ovo e está pronto para aventuras!`,
-        isRead: false,
+        isRead: false
       });
 
       setTimeout(() => {
@@ -104,14 +92,13 @@ export const EggHatchingView: React.FC<EggHatchingViewProps> = ({
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
-    return `${mins}:${secs.toString().padStart(2, "0")}`;
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
   const progressPercentage = ((180 - timeRemaining) / 180) * 100;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-pink-50 flex items-center justify-center p-4">
-      <div className="max-w-md mx-auto text-center">
+    <div className="max-w-md mx-auto text-center"
         <AnimatePresence mode="wait">
           {!isHatching ? (
             <motion.div
@@ -135,12 +122,12 @@ export const EggHatchingView: React.FC<EggHatchingViewProps> = ({
                   className="w-32 h-32 mx-auto rounded-full bg-gray-50 flex items-center justify-center text-6xl shadow-2xl border border-gray-200"
                   animate={{
                     scale: [1, 1.05, 1],
-                    rotate: [0, 2, -2, 0],
+                    rotate: [0, 2, -2, 0]
                   }}
                   transition={{
                     duration: 2,
                     repeat: Infinity,
-                    ease: "easeInOut",
+                    ease: "easeInOut"
                   }}
                 >
                   {eggData.emoji}
@@ -152,8 +139,8 @@ export const EggHatchingView: React.FC<EggHatchingViewProps> = ({
                     key={i}
                     className="absolute w-4 h-4"
                     style={{
-                      top: `${20 + Math.sin((i * 60 * Math.PI) / 180) * 60}px`,
-                      left: `${20 + Math.cos((i * 60 * Math.PI) / 180) * 60}px`,
+                      top: `${20 + Math.sin(i * 60 * Math.PI / 180) * 60}px`,
+                      left: `${20 + Math.cos(i * 60 * Math.PI / 180) * 60}px`,
                     }}
                     animate={{
                       scale: [0, 1, 0],
@@ -214,7 +201,7 @@ export const EggHatchingView: React.FC<EggHatchingViewProps> = ({
                   className="w-32 h-32 mx-auto rounded-full bg-gray-50 flex items-center justify-center text-6xl shadow-2xl border border-gray-200"
                   animate={{
                     scale: [1, 1.2, 0.8, 1.1, 0.9, 1],
-                    rotate: [-5, 5, -3, 3, 0],
+                    rotate: [-5, 5, -3, 3, 0]
                   }}
                   transition={{
                     duration: 0.5,
@@ -230,12 +217,12 @@ export const EggHatchingView: React.FC<EggHatchingViewProps> = ({
                     key={i}
                     className="absolute w-3 h-3"
                     style={{
-                      top: "50%",
-                      left: "50%",
+                      top: '50%',
+                      left: '50%',
                     }}
                     animate={{
-                      x: Math.cos((i * 30 * Math.PI) / 180) * 100,
-                      y: Math.sin((i * 30 * Math.PI) / 180) * 100,
+                      x: Math.cos(i * 30 * Math.PI / 180) * 100,
+                      y: Math.sin(i * 30 * Math.PI / 180) * 100,
                       scale: [0, 1, 0],
                       opacity: [1, 1, 0],
                     }}
@@ -253,9 +240,7 @@ export const EggHatchingView: React.FC<EggHatchingViewProps> = ({
               <div className="text-center">
                 <div className="inline-flex items-center space-x-2 text-green-600">
                   <Heart className="w-5 h-5" />
-                  <span className="font-semibold">
-                    Preparando seu novo companheiro...
-                  </span>
+                  <span className="font-semibold">Preparando seu novo companheiro...</span>
                 </div>
               </div>
             </motion.div>
