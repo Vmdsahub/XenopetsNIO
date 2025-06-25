@@ -44,29 +44,17 @@ export const PetScreen: React.FC = () => {
     });
   };
 
-  // Check if user can create new pet
-  const canCreateNewPet = () => {
-    if (!user) return false;
+  // If user is hatching an egg, show the hatching screen
+  if (isHatching && selectedEgg) {
+    return (
+      <EggHatchingView
+        eggData={selectedEgg}
+        onHatchComplete={handleHatchComplete}
+      />
+    );
+  }
 
-    const currentPetCount = pets.length;
-    const accountScore = user.accountScore;
-
-    if (currentPetCount === 0) return true; // First pet is always allowed
-    if (currentPetCount === 1 && accountScore >= 5000) return true; // Second pet at 5000 score
-    if (currentPetCount === 2 && accountScore >= 15000) return true; // Third pet at 15000 score
-    if (currentPetCount >= 3) return false; // Maximum 3 pets
-
-    return false;
-  };
-
-  const getRequiredScoreForNextPet = () => {
-    const currentPetCount = pets.length;
-    if (currentPetCount === 1) return 5000;
-    if (currentPetCount === 2) return 15000;
-    return 0;
-  };
-
-  // Show pet creation screen if no pets
+  // If no pets exist, show egg selection screen
   if (!activePet && pets.length === 0) {
     return (
       <>
