@@ -8,9 +8,22 @@
 // Mapa para armazenar os áudios pré-carregados
 const audioCache: Record<string, HTMLAudioElement> = {};
 
+// Check browser support for audio formats
+const getNotificationSoundPath = (): string => {
+  const audio = new Audio();
+
+  // Check MP3 support
+  if (audio.canPlayType("audio/mpeg")) {
+    return "/sounds/notification-pop.mp3";
+  }
+
+  // If MP3 not supported, we'll handle it in the playSound function
+  return "/sounds/notification-pop.mp3";
+};
+
 // Lista de sons disponíveis no jogo
 export const Sounds = {
-  NOTIFICATION: "/sounds/notification-pop.mp3",
+  NOTIFICATION: getNotificationSoundPath(),
   // Adicionar mais sons aqui conforme necessário
 };
 
