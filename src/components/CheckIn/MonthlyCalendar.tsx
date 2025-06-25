@@ -413,7 +413,7 @@ export const MonthlyCalendar: React.FC<MonthlyCalendarProps> = ({
                   {getDailyCheckinStreak()} dias
                 </span>
               </div>
-              <div className="text-xs text-gray-500">Hoje: Dia {today}</div>
+              <div className="text-xs text-gray-500" />
             </div>
           )}
         </div>
