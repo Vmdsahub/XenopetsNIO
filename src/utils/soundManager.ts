@@ -189,11 +189,11 @@ const tryAlternativePlay = (
   }
 };
 
-// Convenience functions
-export const playNotificationSound = (): Promise<void> => {
-  return playSound(Sounds.NOTIFICATION, 0.5).catch((error) => {
-    console.warn("Notification sound failed to play:", error.message);
-    // Try to play a simple beep sound as fallback
+/**
+ * Creates a notification sound using Web Audio API
+ */
+const playNotificationBeep = (): Promise<void> => {
+  return new Promise((resolve) => {
     try {
       const audioContext = new (window.AudioContext ||
         (window as any).webkitAudioContext)();
@@ -203,8 +203,15 @@ export const playNotificationSound = (): Promise<void> => {
       oscillator.connect(gainNode);
       gainNode.connect(audioContext.destination);
 
+      // Create a pleasant notification sound (two-tone beep)
       oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
-      gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+      oscillator.frequency.setValueAtTime(1000, audioContext.currentTime + 0.1);
+
+      gainNode.gain.setValueAtTime(0, audioContext.currentTime);
+      gainNode.gain.linearRampToValueAtTime(
+        0.1,
+        audioContext.currentTime + 0.01,
+      );
       gainNode.gain.exponentialRampToValueAtTime(
         0.01,
         audioContext.currentTime + 0.3,
@@ -212,9 +219,24 @@ export const playNotificationSound = (): Promise<void> => {
 
       oscillator.start(audioContext.currentTime);
       oscillator.stop(audioContext.currentTime + 0.3);
-    } catch (fallbackError) {
-      console.warn("Fallback sound also failed:", fallbackError);
+
+      // Resolve after the sound finishes
+      setTimeout(() => resolve(), 350);
+    } catch (error) {
+      console.warn("Web Audio API notification failed:", error);
+      resolve(); // Don't fail - just continue silently
     }
-    // Don't throw error for notification sounds - they're non-critical
+  });
+};
+
+// Convenience functions
+export const playNotificationSound = (): Promise<void> => {
+  // Try the Web Audio API notification first (more reliable)
+  return playNotificationBeep().catch(() => {
+    // Fallback to MP3 file
+    return playSound(Sounds.NOTIFICATION, 0.5).catch((error) => {
+      console.warn("Both notification methods failed:", error.message);
+      // Don't throw error for notification sounds - they're non-critical
+    });
   });
 };
