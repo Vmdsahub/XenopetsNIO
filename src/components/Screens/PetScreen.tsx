@@ -19,7 +19,8 @@ export const PetScreen: React.FC = () => {
     setCurrentScreen,
   } = useGameStore();
 
-  const [showPetCreation, setShowPetCreation] = useState(false);
+  const [selectedEgg, setSelectedEgg] = useState<any>(null);
+  const [isHatching, setIsHatching] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
   const handleCreatePet = async (petData: Pet) => {
