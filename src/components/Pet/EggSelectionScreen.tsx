@@ -14,7 +14,7 @@ const eggs: Egg[] = [
   {
     id: "dragon-egg",
     name: "Ovo de Dragão",
-    emoji: "��",
+    emoji: "🥚",
     species: "Dragon",
   },
   {
@@ -69,21 +69,6 @@ export const EggSelectionScreen: React.FC<EggSelectionScreenProps> = ({
     setTimeout(() => {
       onEggSelected(selectedEgg);
     }, 1500);
-  };
-
-  const getRarityColor = (rarity: string) => {
-    switch (rarity) {
-      case "Common":
-        return "text-gray-600 bg-gray-100";
-      case "Uncommon":
-        return "text-green-600 bg-green-100";
-      case "Rare":
-        return "text-blue-600 bg-blue-100";
-      case "Epic":
-        return "text-purple-600 bg-purple-100";
-      default:
-        return "text-gray-600 bg-gray-100";
-    }
   };
 
   return (
