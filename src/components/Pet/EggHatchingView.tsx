@@ -98,8 +98,8 @@ export const EggHatchingView: React.FC<EggHatchingViewProps> = ({ eggData, onHat
   const progressPercentage = ((180 - timeRemaining) / 180) * 100;
 
   return (
-    <div className="max-w-md mx-auto text-center"
-        <AnimatePresence mode="wait">
+    <div className="max-w-md mx-auto text-center">
+      <AnimatePresence mode="wait">
           {!isHatching ? (
             <motion.div
               key="incubating"
