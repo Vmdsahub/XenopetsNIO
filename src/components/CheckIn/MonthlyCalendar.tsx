@@ -143,14 +143,6 @@ export const MonthlyCalendar: React.FC<MonthlyCalendarProps> = ({
 
   const weekDays = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
 
-  const handlePrevMonth = () => {
-    setCurrentDate(new Date(currentYear, currentMonth - 1, 1));
-  };
-
-  const handleNextMonth = () => {
-    setCurrentDate(new Date(currentYear, currentMonth + 1, 1));
-  };
-
   const handleDayClick = async (day: number) => {
     if (!isCurrentMonth || day > today) return;
 
