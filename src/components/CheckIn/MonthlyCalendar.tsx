@@ -74,34 +74,25 @@ export const MonthlyCalendar: React.FC<MonthlyCalendarProps> = ({
 
   // Generate rewards for each day
   const generateDailyReward = (day: number): DailyReward => {
-    const baseRewards = [
-      { type: "xenocoins" as const, amount: 50, icon: "🪙" },
-      { type: "xenocoins" as const, amount: 75, icon: "🪙" },
-      { type: "cash" as const, amount: 1, icon: "💰" },
-      { type: "xenocoins" as const, amount: 100, icon: "🪙" },
-      { type: "item" as const, item: "Health Potion", icon: "🧪" },
-      { type: "xenocoins" as const, amount: 125, icon: "🪙" },
-      { type: "cash" as const, amount: 2, icon: "💰" }, // Weekly bonus
-    ];
-
-    const specialRewards = [
-      { type: "special" as const, amount: 200, icon: "⭐" }, // Day 10
-      { type: "special" as const, amount: 300, icon: "💎" }, // Day 15
-      { type: "special" as const, amount: 500, icon: "👑" }, // Day 20
-      { type: "special" as const, amount: 1000, icon: "🏆" }, // Day 30
-    ];
+    // Get the day of week for this specific day (0 = Sunday, 1 = Monday, etc.)
+    const dayOfWeek = new Date(currentYear, currentMonth, day).getDay();
 
     let reward;
 
-    // Special rewards for milestones
-    if (day === 10) reward = specialRewards[0];
-    else if (day === 15) reward = specialRewards[1];
-    else if (day === 20) reward = specialRewards[2];
-    else if (day === 30 || day === 31) reward = specialRewards[3];
-    else {
-      // Regular weekly cycle
-      const cycleDay = (day - 1) % 7;
-      reward = baseRewards[cycleDay];
+    if (dayOfWeek === 0) {
+      // Sunday: 1 Xenocash
+      reward = { type: "cash" as const, amount: 1, icon: "💰" };
+    } else {
+      // All other days: 100 Xenocoins
+      reward = { type: "xenocoins" as const, amount: 100, icon: "🪙" };
+    }
+
+    // Debug log to verify the new system is working
+    if (day <= 5) {
+      console.log(
+        `Day ${day} (${dayOfWeek === 0 ? "Sunday" : "Weekday"}):`,
+        reward,
+      );
     }
 
     // Check if already claimed (simplified - in real app would check backend)
@@ -155,10 +146,11 @@ export const MonthlyCalendar: React.FC<MonthlyCalendarProps> = ({
     try {
       setClaimingDay(day);
 
-      // Claim the reward
-      dailyCheckin();
+      // Update last check-in date (mark as claimed)
+      const today = new Date().toDateString();
+      localStorage.setItem("lastCheckin", today);
 
-      // Give the actual reward
+      // Give the actual reward (only calendar reward, no fixed bonus)
       if (reward.type === "xenocoins" || reward.type === "special") {
         await updateCurrency("xenocoins", reward.amount || 0);
       } else if (reward.type === "cash") {
@@ -324,18 +316,14 @@ export const MonthlyCalendar: React.FC<MonthlyCalendarProps> = ({
                     {reward.icon}
                   </motion.span>
 
-                  {/* Reward amount for special days */}
-                  {(day === 10 ||
-                    day === 15 ||
-                    day === 20 ||
-                    day === 30 ||
-                    day === 31) &&
-                    !reward.claimed && (
-                      <div className="absolute -top-2 -left-2 bg-gradient-to-r from-yellow-400 to-orange-500 text-white text-xs px-1 py-0.5 rounded-full font-bold shadow-lg">
-                        {reward.amount}
-                      </div>
-                    )}
-
+                  {/* Subtle reward amount indicator */}
+                  {!reward.claimed && (
+                    <div className="absolute -bottom-0.5 -right-0.5 bg-black/30 text-white text-xs px-1 py-0.5 rounded font-medium shadow-sm">
+                      {reward.type === "cash"
+                        ? `$${reward.amount}`
+                        : reward.amount}
+                    </div>
+                  )}
                   {/* Claimed check mark */}
                   {reward.claimed && (
                     <motion.div
