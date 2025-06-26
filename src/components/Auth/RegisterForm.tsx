@@ -1,24 +1,40 @@
-import React, { useState } from 'react';
-import { motion } from 'framer-motion';
-import { Eye, EyeOff, Mail, Lock, User, Phone, UserPlus, AlertCircle, CheckCircle, Crown } from 'lucide-react';
-import { useAuthStore } from '../../store/authStore';
-import { RegisterCredentials } from '../../types/auth';
+import React, { useState, useRef } from "react";
+import { motion } from "framer-motion";
+import {
+  Eye,
+  EyeOff,
+  Mail,
+  Lock,
+  User,
+  Phone,
+  UserPlus,
+  AlertCircle,
+  CheckCircle,
+  Crown,
+} from "lucide-react";
+import ReCAPTCHA from "react-google-recaptcha";
+import { useAuthStore } from "../../store/authStore";
+import { RegisterCredentials } from "../../types/auth";
 
 interface RegisterFormProps {
   onSwitchToLogin: () => void;
 }
 
-export const RegisterForm: React.FC<RegisterFormProps> = ({ onSwitchToLogin }) => {
+export const RegisterForm: React.FC<RegisterFormProps> = ({
+  onSwitchToLogin,
+}) => {
   const [credentials, setCredentials] = useState<RegisterCredentials>({
-    email: '',
-    password: '',
-    confirmPassword: '',
-    username: '',
-    phone: ''
+    email: "",
+    password: "",
+    confirmPassword: "",
+    username: "",
+    phone: "",
   });
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [acceptTerms, setAcceptTerms] = useState(false);
+  const [captchaValue, setCaptchaValue] = useState<string | null>(null);
+  const recaptchaRef = useRef<ReCAPTCHA>(null);
 
   const { register, isLoading, error, clearError } = useAuthStore();
 
@@ -29,15 +45,29 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onSwitchToLogin }) =
     if (!acceptTerms) {
       return;
     }
-    
+
+    if (!captchaValue) {
+      // You could set an error state here if needed
+      return;
+    }
+
     const success = await register(credentials);
     if (success) {
       // Navigation will be handled by the main App component
+    } else {
+      // Reset captcha on error
+      if (recaptchaRef.current) {
+        recaptchaRef.current.reset();
+        setCaptchaValue(null);
+      }
     }
   };
 
-  const handleInputChange = (field: keyof RegisterCredentials, value: string) => {
-    setCredentials(prev => ({ ...prev, [field]: value }));
+  const handleInputChange = (
+    field: keyof RegisterCredentials,
+    value: string,
+  ) => {
+    setCredentials((prev) => ({ ...prev, [field]: value }));
     if (error) clearError();
   };
 
@@ -52,10 +82,16 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onSwitchToLogin }) =
   };
 
   const passwordStrength = getPasswordStrength(credentials.password);
-  const strengthColors = ['bg-red-500', 'bg-red-400', 'bg-yellow-500', 'bg-yellow-400', 'bg-green-500'];
-  const strengthLabels = ['Muito Fraca', 'Fraca', 'Regular', 'Boa', 'Forte'];
+  const strengthColors = [
+    "bg-red-500",
+    "bg-red-400",
+    "bg-yellow-500",
+    "bg-yellow-400",
+    "bg-green-500",
+  ];
+  const strengthLabels = ["Muito Fraca", "Fraca", "Regular", "Boa", "Forte"];
 
-  const isVitoca = credentials.username.toLowerCase() === 'vitoca';
+  const isVitoca = credentials.username.toLowerCase() === "vitoca";
 
   return (
     <motion.div
@@ -74,7 +110,9 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onSwitchToLogin }) =
           >
             <span className="text-white text-3xl font-bold">X</span>
           </motion.div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Junte-se aos Xenopets</h1>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">
+            Junte-se aos Xenopets
+          </h1>
           <p className="text-gray-600">Crie sua conta e comece sua aventura</p>
         </div>
 
@@ -100,8 +138,12 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onSwitchToLogin }) =
             <div className="flex items-center space-x-3">
               <Crown className="w-6 h-6 text-yellow-600" />
               <div>
-                <p className="text-yellow-800 font-semibold">Conta de Administrador</p>
-                <p className="text-yellow-700 text-sm">Você terá acesso ao painel administrativo!</p>
+                <p className="text-yellow-800 font-semibold">
+                  Conta de Administrador
+                </p>
+                <p className="text-yellow-700 text-sm">
+                  Você terá acesso ao painel administrativo!
+                </p>
               </div>
             </div>
           </motion.div>
@@ -111,7 +153,10 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onSwitchToLogin }) =
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Email Field */}
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+            <label
+              htmlFor="email"
+              className="block text-sm font-medium text-gray-700 mb-2"
+            >
               Email *
             </label>
             <div className="relative">
@@ -120,7 +165,7 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onSwitchToLogin }) =
                 id="email"
                 type="email"
                 value={credentials.email}
-                onChange={(e) => handleInputChange('email', e.target.value)}
+                onChange={(e) => handleInputChange("email", e.target.value)}
                 className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                 placeholder="Digite seu email"
                 required
@@ -131,7 +176,10 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onSwitchToLogin }) =
 
           {/* Username Field */}
           <div>
-            <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-2">
+            <label
+              htmlFor="username"
+              className="block text-sm font-medium text-gray-700 mb-2"
+            >
               Nome de Usuário *
             </label>
             <div className="relative">
@@ -140,7 +188,7 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onSwitchToLogin }) =
                 id="username"
                 type="text"
                 value={credentials.username}
-                onChange={(e) => handleInputChange('username', e.target.value)}
+                onChange={(e) => handleInputChange("username", e.target.value)}
                 className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                 placeholder="Escolha um nome de usuário"
                 required
@@ -154,7 +202,10 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onSwitchToLogin }) =
 
           {/* Phone Field (Optional) */}
           <div>
-            <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-2">
+            <label
+              htmlFor="phone"
+              className="block text-sm font-medium text-gray-700 mb-2"
+            >
               Telefone (Opcional)
             </label>
             <div className="relative">
@@ -163,7 +214,7 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onSwitchToLogin }) =
                 id="phone"
                 type="tel"
                 value={credentials.phone}
-                onChange={(e) => handleInputChange('phone', e.target.value)}
+                onChange={(e) => handleInputChange("phone", e.target.value)}
                 className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                 placeholder="Digite seu telefone"
                 autoComplete="tel"
@@ -173,16 +224,19 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onSwitchToLogin }) =
 
           {/* Password Field */}
           <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
+            <label
+              htmlFor="password"
+              className="block text-sm font-medium text-gray-700 mb-2"
+            >
               Senha *
             </label>
             <div className="relative">
               <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
               <input
                 id="password"
-                type={showPassword ? 'text' : 'password'}
+                type={showPassword ? "text" : "password"}
                 value={credentials.password}
-                onChange={(e) => handleInputChange('password', e.target.value)}
+                onChange={(e) => handleInputChange("password", e.target.value)}
                 className="w-full pl-10 pr-12 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                 placeholder="Crie uma senha forte"
                 required
@@ -193,10 +247,14 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onSwitchToLogin }) =
                 onClick={() => setShowPassword(!showPassword)}
                 className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
               >
-                {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                {showPassword ? (
+                  <EyeOff className="w-5 h-5" />
+                ) : (
+                  <Eye className="w-5 h-5" />
+                )}
               </button>
             </div>
-            
+
             {/* Password Strength Indicator */}
             {credentials.password && (
               <div className="mt-2">
@@ -205,13 +263,16 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onSwitchToLogin }) =
                     <div
                       key={i}
                       className={`h-1 flex-1 rounded-full ${
-                        i < passwordStrength ? strengthColors[passwordStrength - 1] : 'bg-gray-200'
+                        i < passwordStrength
+                          ? strengthColors[passwordStrength - 1]
+                          : "bg-gray-200"
                       }`}
                     />
                   ))}
                 </div>
                 <p className="text-xs text-gray-600">
-                  Força da senha: {strengthLabels[passwordStrength - 1] || 'Muito Fraca'}
+                  Força da senha:{" "}
+                  {strengthLabels[passwordStrength - 1] || "Muito Fraca"}
                 </p>
               </div>
             )}
@@ -219,16 +280,21 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onSwitchToLogin }) =
 
           {/* Confirm Password Field */}
           <div>
-            <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-2">
+            <label
+              htmlFor="confirmPassword"
+              className="block text-sm font-medium text-gray-700 mb-2"
+            >
               Confirmar Senha *
             </label>
             <div className="relative">
               <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
               <input
                 id="confirmPassword"
-                type={showConfirmPassword ? 'text' : 'password'}
+                type={showConfirmPassword ? "text" : "password"}
                 value={credentials.confirmPassword}
-                onChange={(e) => handleInputChange('confirmPassword', e.target.value)}
+                onChange={(e) =>
+                  handleInputChange("confirmPassword", e.target.value)
+                }
                 className="w-full pl-10 pr-12 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                 placeholder="Confirme sua senha"
                 required
@@ -239,12 +305,31 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onSwitchToLogin }) =
                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                 className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
               >
-                {showConfirmPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                {showConfirmPassword ? (
+                  <EyeOff className="w-5 h-5" />
+                ) : (
+                  <Eye className="w-5 h-5" />
+                )}
               </button>
-              {credentials.confirmPassword && credentials.password === credentials.confirmPassword && (
-                <CheckCircle className="absolute right-10 top-1/2 transform -translate-y-1/2 w-5 h-5 text-green-500" />
-              )}
+              {credentials.confirmPassword &&
+                credentials.password === credentials.confirmPassword && (
+                  <CheckCircle className="absolute right-10 top-1/2 transform -translate-y-1/2 w-5 h-5 text-green-500" />
+                )}
             </div>
+          </div>
+
+          {/* Captcha */}
+          <div className="flex justify-center">
+            <ReCAPTCHA
+              ref={recaptchaRef}
+              sitekey={
+                import.meta.env.VITE_RECAPTCHA_SITE_KEY ||
+                "6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI"
+              }
+              onChange={(value) => setCaptchaValue(value)}
+              onExpired={() => setCaptchaValue(null)}
+              theme="light"
+            />
           </div>
 
           {/* Terms and Conditions */}
@@ -257,12 +342,18 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onSwitchToLogin }) =
                 className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 mt-1"
               />
               <span className="text-sm text-gray-600">
-                Eu concordo com os{' '}
-                <a href="#" className="text-blue-600 hover:text-blue-700 font-medium">
+                Eu concordo com os{" "}
+                <a
+                  href="#"
+                  className="text-blue-600 hover:text-blue-700 font-medium"
+                >
                   Termos de Serviço
-                </a>{' '}
-                e{' '}
-                <a href="#" className="text-blue-600 hover:text-blue-700 font-medium">
+                </a>{" "}
+                e{" "}
+                <a
+                  href="#"
+                  className="text-blue-600 hover:text-blue-700 font-medium"
+                >
                   Política de Privacidade
                 </a>
               </span>
@@ -272,7 +363,7 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onSwitchToLogin }) =
           {/* Submit Button */}
           <motion.button
             type="submit"
-            disabled={isLoading || !acceptTerms}
+            disabled={isLoading || !acceptTerms || !captchaValue}
             className="w-full bg-gradient-to-r from-green-600 to-blue-600 text-white py-3 rounded-xl hover:from-green-700 hover:to-blue-700 transition-all font-semibold shadow-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
@@ -291,7 +382,7 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onSwitchToLogin }) =
         {/* Switch to Login */}
         <div className="mt-8 text-center">
           <p className="text-gray-600">
-            Já tem uma conta?{' '}
+            Já tem uma conta?{" "}
             <button
               onClick={onSwitchToLogin}
               className="text-blue-600 hover:text-blue-700 font-medium transition-colors"

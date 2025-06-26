@@ -66,12 +66,12 @@ export const preloadSound = (soundPath: string): Promise<void> => {
           canPlayType: audio.canPlayType("audio/mpeg"),
           src: audio.src,
         };
-        console.error(`Erro ao carregar som ${soundPath}:`, errorDetails);
-        reject(
-          new Error(
-            `Failed to load sound: ${soundPath} - ${e.type} (Error code: ${errorDetails.errorCode})`,
-          ),
+        console.warn(
+          `Som não pode ser carregado (não crítico): ${soundPath}`,
+          errorDetails,
         );
+        // Don't reject for non-critical sound loading failures
+        resolve();
       });
 
       audio.load();
