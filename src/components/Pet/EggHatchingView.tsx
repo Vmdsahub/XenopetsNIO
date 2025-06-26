@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Clock, Sparkles, Heart, Star } from "lucide-react";
+import { Heart } from "lucide-react";
 import { useGameStore } from "../../store/gameStore";
+import { EggPortrait } from "./EggPortrait";
 
 interface EggHatchingViewProps {
   eggData: {
@@ -18,6 +19,9 @@ export const EggHatchingView: React.FC<EggHatchingViewProps> = ({
   onHatchComplete,
 }) => {
   const [isHatching, setIsHatching] = useState(false);
+  const [isNamingPet, setIsNamingPet] = useState(false);
+  const [petName, setPetName] = useState("");
+  const [timeRemaining, setTimeRemaining] = useState(0);
   const {
     addNotification,
     createPet,
@@ -27,61 +31,75 @@ export const EggHatchingView: React.FC<EggHatchingViewProps> = ({
     getHatchingTimeRemaining,
   } = useGameStore();
 
-  // Initialize hatching egg if not already set
+  // If no user is logged in, redirect back
+  if (!user) {
+    console.warn("No user logged in for egg hatching");
+    onHatchComplete();
+    return null;
+  }
+
+  // Initialize hatching egg if not already set, but only for current user
   useEffect(() => {
-    if (!hatchingEgg) {
+    if (!hatchingEgg && user) {
       setHatchingEgg(eggData);
     }
-  }, [eggData, hatchingEgg, setHatchingEgg]);
+  }, [eggData, hatchingEgg, setHatchingEgg, user]);
 
-  // Calculate time remaining from global store
-  const timeRemainingMs = getHatchingTimeRemaining();
-  const timeRemaining = Math.ceil(timeRemainingMs / 1000); // Convert to seconds
-
+  // Update timer every second
   useEffect(() => {
     const timer = setInterval(() => {
       const remaining = getHatchingTimeRemaining();
+      const remainingSeconds = Math.ceil(remaining / 1000);
+      setTimeRemaining(remainingSeconds);
+
       if (remaining <= 0 && !isHatching) {
         setIsHatching(true);
       }
     }, 1000);
+
+    // Initial update
+    const remaining = getHatchingTimeRemaining();
+    setTimeRemaining(Math.ceil(remaining / 1000));
 
     return () => clearInterval(timer);
   }, [getHatchingTimeRemaining, isHatching]);
 
   useEffect(() => {
     if (isHatching) {
-      // Wait 3 seconds for hatching animation, then create the pet
-      const hatchTimer = setTimeout(async () => {
-        await handlePetHatch();
+      // Wait 3 seconds for hatching animation, then show name selection
+      const hatchTimer = setTimeout(() => {
+        setIsNamingPet(true);
       }, 3000);
 
       return () => clearTimeout(hatchTimer);
     }
   }, [isHatching]);
 
-  const handlePetHatch = async () => {
+  const handlePetHatch = async (customName?: string) => {
     if (!user) return;
 
     const { clearHatchingEgg } = useGameStore.getState();
 
-    // Create the pet with random name and the egg's bonuses
-    const petNames = [
-      "Buddy",
-      "Luna",
-      "Max",
-      "Bella",
-      "Charlie",
-      "Ruby",
-      "Oliver",
-      "Stella",
-    ];
-    const randomName = petNames[Math.floor(Math.random() * petNames.length)];
+    // Use custom name or fallback to random name
+    let finalName = customName || petName;
+    if (!finalName.trim()) {
+      const petNames = [
+        "Buddy",
+        "Luna",
+        "Max",
+        "Bella",
+        "Charlie",
+        "Ruby",
+        "Oliver",
+        "Stella",
+      ];
+      finalName = petNames[Math.floor(Math.random() * petNames.length)];
+    }
 
     const now = new Date();
 
     const newPet = await createPet({
-      name: randomName,
+      name: finalName,
       species: eggData.species,
       style: "Default",
       personality: "Sanguine",
@@ -114,7 +132,7 @@ export const EggHatchingView: React.FC<EggHatchingViewProps> = ({
       addNotification({
         type: "success",
         title: "🎉 Seu pet nasceu!",
-        message: `Parabéns! ${randomName} saiu do ovo e está pronto para aventuras!`,
+        message: `Parabéns! ${finalName} saiu do ovo e está pronto para aventuras!`,
         isRead: false,
       });
 
@@ -124,168 +142,94 @@ export const EggHatchingView: React.FC<EggHatchingViewProps> = ({
     }
   };
 
-  const formatTime = (seconds: number) => {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${mins}:${secs.toString().padStart(2, "0")}`;
+  const handleNameSubmit = () => {
+    if (!petName.trim()) {
+      addNotification({
+        type: "warning",
+        title: "Nome inválido",
+        message: "Por favor, escolha um nome para seu pet!",
+        isRead: false,
+      });
+      return;
+    }
+    handlePetHatch(petName);
   };
 
-  const totalHatchingTime = 3 * 60; // 3 minutes in seconds
-  const progressPercentage = Math.max(
-    0,
-    Math.min(
-      100,
-      ((totalHatchingTime - timeRemaining) / totalHatchingTime) * 100,
-    ),
-  );
-
   return (
-    <div className="max-w-md mx-auto text-center">
+    <div className="max-w-md mx-auto">
       <AnimatePresence mode="wait">
-        {!isHatching ? (
+        {!isNamingPet ? (
           <motion.div
-            key="incubating"
+            key="egg-stage"
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.9 }}
-            className="space-y-8"
           >
-            {/* Header */}
-            <div>
-              <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-2">
-                Chocando...
-              </h1>
-              <p className="text-gray-600">{eggData.name}</p>
-            </div>
-
-            {/* Egg with Animation */}
-            <div className="relative">
-              <motion.div
-                className="w-32 h-32 mx-auto rounded-full bg-gray-50 flex items-center justify-center text-6xl shadow-2xl border border-gray-200"
-                animate={{
-                  scale: [1, 1.05, 1],
-                  rotate: [0, 2, -2, 0],
-                }}
-                transition={{
-                  duration: 2,
-                  repeat: Infinity,
-                  ease: "easeInOut",
-                }}
-              >
-                {eggData.emoji}
-              </motion.div>
-
-              {/* Sparkles around egg */}
-              {[...Array(6)].map((_, i) => (
-                <motion.div
-                  key={i}
-                  className="absolute w-4 h-4"
-                  style={{
-                    top: `${20 + Math.sin((i * 60 * Math.PI) / 180) * 60}px`,
-                    left: `${20 + Math.cos((i * 60 * Math.PI) / 180) * 60}px`,
-                  }}
-                  animate={{
-                    scale: [0, 1, 0],
-                    rotate: [0, 180, 360],
-                  }}
-                  transition={{
-                    duration: 2,
-                    repeat: Infinity,
-                    delay: i * 0.3,
-                  }}
-                >
-                  <Sparkles className="w-4 h-4 text-purple-400" />
-                </motion.div>
-              ))}
-            </div>
-
-            {/* Progress Bar */}
-            <div className="space-y-4">
-              <div className="bg-gray-200 rounded-full h-3 overflow-hidden">
-                <motion.div
-                  className="h-full bg-gradient-to-r from-purple-500 to-pink-500 rounded-full"
-                  initial={{ width: 0 }}
-                  animate={{ width: `${progressPercentage}%` }}
-                  transition={{ duration: 0.5 }}
-                />
-              </div>
-
-              <div className="flex items-center justify-center space-x-2">
-                <Clock className="w-5 h-5 text-gray-500" />
-                <span className="text-2xl font-mono font-bold text-gray-700">
-                  {formatTime(timeRemaining)}
-                </span>
-              </div>
-
-              <p className="text-sm text-gray-500">
-                Seu pet está se desenvolvendo dentro do ovo
-              </p>
-            </div>
+            <EggPortrait
+              eggData={eggData}
+              timeRemainingSeconds={timeRemaining}
+              isHatching={isHatching}
+            />
           </motion.div>
         ) : (
           <motion.div
-            key="hatching"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="space-y-8"
+            key="naming-stage"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="bg-white rounded-3xl shadow-xl p-6 border border-gray-100 text-center"
           >
-            {/* Hatching Animation */}
-            <div>
-              <h1 className="text-3xl font-bold text-green-600 mb-2">
-                🎉 Nascendo!
-              </h1>
-              <p className="text-gray-600">Seu pet está saindo do ovo!</p>
-            </div>
-
-            {/* Cracking Egg */}
-            <div className="relative">
-              <motion.div
-                className="w-32 h-32 mx-auto rounded-full bg-gray-50 flex items-center justify-center text-6xl shadow-2xl border border-gray-200"
-                animate={{
-                  scale: [1, 1.2, 0.8, 1.1, 0.9, 1],
-                  rotate: [-5, 5, -3, 3, 0],
-                }}
-                transition={{
-                  duration: 0.5,
-                  repeat: Infinity,
-                }}
-              >
-                {eggData.emoji}
-              </motion.div>
-
-              {/* Explosion Effect */}
-              {[...Array(12)].map((_, i) => (
-                <motion.div
-                  key={i}
-                  className="absolute w-3 h-3"
-                  style={{
-                    top: "50%",
-                    left: "50%",
-                  }}
-                  animate={{
-                    x: Math.cos((i * 30 * Math.PI) / 180) * 100,
-                    y: Math.sin((i * 30 * Math.PI) / 180) * 100,
-                    scale: [0, 1, 0],
-                    opacity: [1, 1, 0],
-                  }}
-                  transition={{
-                    duration: 2,
-                    repeat: Infinity,
-                    delay: i * 0.1,
-                  }}
-                >
-                  <Star className="w-3 h-3 text-yellow-400 fill-yellow-400" />
-                </motion.div>
-              ))}
-            </div>
-
-            <div className="text-center">
-              <div className="inline-flex items-center space-x-2 text-green-600">
-                <Heart className="w-5 h-5" />
-                <span className="font-semibold">
-                  Preparando seu novo companheiro...
-                </span>
+            {/* Success Header */}
+            <div className="mb-6">
+              <div className="w-20 h-20 bg-gradient-to-br from-green-400 to-blue-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                <span className="text-3xl">🎉</span>
               </div>
+              <h2 className="text-2xl font-bold text-gray-900 mb-2">
+                Seu pet nasceu!
+              </h2>
+              <p className="text-gray-600">
+                Agora escolha um nome para seu novo {eggData.species}
+              </p>
+            </div>
+
+            {/* Name Input */}
+            <div className="mb-6">
+              <input
+                type="text"
+                value={petName}
+                onChange={(e) => setPetName(e.target.value)}
+                placeholder="Digite o nome do seu pet..."
+                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-center text-lg font-medium"
+                maxLength={20}
+                autoFocus
+                onKeyPress={(e) => {
+                  if (e.key === "Enter") {
+                    handleNameSubmit();
+                  }
+                }}
+              />
+              <p className="text-sm text-gray-500 mt-2">Máximo 20 caracteres</p>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="space-y-3">
+              <motion.button
+                onClick={handleNameSubmit}
+                className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 rounded-xl hover:from-blue-700 hover:to-purple-700 transition-all font-semibold shadow-lg flex items-center justify-center space-x-2"
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+              >
+                <Heart className="w-5 h-5" />
+                <span>Confirmar Nome</span>
+              </motion.button>
+
+              <motion.button
+                onClick={() => handlePetHatch()}
+                className="w-full bg-gray-100 text-gray-700 py-3 rounded-xl hover:bg-gray-200 transition-colors font-medium"
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+              >
+                Gerar nome aleatório
+              </motion.button>
             </div>
           </motion.div>
         )}

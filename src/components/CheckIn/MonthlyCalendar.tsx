@@ -40,6 +40,7 @@ export const MonthlyCalendar: React.FC<MonthlyCalendarProps> = ({
     getDailyCheckinStreak,
     addNotification,
     updateCurrency,
+    user,
   } = useGameStore();
 
   // Get current month and year
@@ -96,7 +97,9 @@ export const MonthlyCalendar: React.FC<MonthlyCalendarProps> = ({
     }
 
     // Check if already claimed (simplified - in real app would check backend)
-    const lastCheckin = localStorage.getItem("lastCheckin");
+    const lastCheckin = user
+      ? localStorage.getItem(`lastCheckin_${user.id}`)
+      : null;
     const lastCheckinDate = lastCheckin ? new Date(lastCheckin) : null;
     const claimed =
       lastCheckinDate &&
@@ -148,7 +151,9 @@ export const MonthlyCalendar: React.FC<MonthlyCalendarProps> = ({
 
       // Update last check-in date (mark as claimed)
       const today = new Date().toDateString();
-      localStorage.setItem("lastCheckin", today);
+      if (user) {
+        localStorage.setItem(`lastCheckin_${user.id}`, today);
+      }
 
       // Give the actual reward (only calendar reward, no fixed bonus)
       if (reward.type === "xenocoins" || reward.type === "special") {

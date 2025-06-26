@@ -27,6 +27,7 @@ interface GameStore extends GameState {
   hatchingEgg: {
     eggData: any;
     startTime: Date;
+    userId: string; // Track which user this hatching belongs to
   } | null;
   setSelectedEggForHatching: (eggData: any) => void;
   clearSelectedEggForHatching: () => void;
@@ -668,7 +669,42 @@ export const useGameStore = create<GameStore>()(
       hatchingEgg: null,
 
       // Core actions
-      setUser: (user) => set({ user }),
+      setUser: (user) => {
+        const state = get();
+
+        // If switching to a different user, clear egg hatching state
+        if (user && state.user && user.id !== state.user.id) {
+          set({
+            user,
+            selectedEggForHatching: null,
+            isHatchingInProgress: false,
+            hatchingEgg: null,
+          });
+        } else if (!user) {
+          // Logging out, clear all user-specific state and localStorage
+          if (state.user) {
+            // Clear user-specific localStorage items
+            localStorage.removeItem(`lastCheckin_${state.user.id}`);
+            localStorage.removeItem(`checkinStreak_${state.user.id}`);
+          }
+
+          set({
+            user: null,
+            pets: [],
+            inventory: [],
+            xenocoins: 0,
+            cash: 0,
+            notifications: [],
+            achievements: [],
+            collectibles: [],
+            selectedEggForHatching: null,
+            isHatchingInProgress: false,
+            hatchingEgg: null,
+          });
+        } else {
+          set({ user });
+        }
+      },
       setActivePet: (pet) => set({ activePet: pet }),
       setCurrentScreen: (screen) => set({ currentScreen: screen }),
       setViewedUserId: (userId) => set({ viewedUserId: userId }),
@@ -679,17 +715,29 @@ export const useGameStore = create<GameStore>()(
       clearSelectedEggForHatching: () => set({ selectedEggForHatching: null }),
       setIsHatchingInProgress: (isHatching) =>
         set({ isHatchingInProgress: isHatching }),
-      setHatchingEgg: (eggData) =>
+      setHatchingEgg: (eggData) => {
+        const state = get();
+        if (!state.user) return;
+
         set({
           hatchingEgg: {
             eggData,
             startTime: new Date(),
+            userId: state.user.id,
           },
-        }),
+        });
+      },
       clearHatchingEgg: () => set({ hatchingEgg: null }),
       getHatchingTimeRemaining: () => {
         const state = get();
-        if (!state.hatchingEgg) return 0;
+        if (!state.hatchingEgg || !state.user) return 0;
+
+        // Check if the hatching egg belongs to the current user
+        if (state.hatchingEgg.userId !== state.user.id) {
+          // Clear invalid hatching state
+          get().clearHatchingEgg();
+          return 0;
+        }
 
         const elapsedTime = Date.now() - state.hatchingEgg.startTime.getTime();
         const hatchingDuration = 3 * 60 * 1000; // 3 minutes in milliseconds
@@ -1498,14 +1546,14 @@ export const useGameStore = create<GameStore>()(
       // Daily check-in system
       dailyCheckin: () => {
         const state = get();
-        if (!get().canClaimDailyCheckin()) return;
+        if (!state.user || !get().canClaimDailyCheckin()) return;
 
         // Award daily check-in rewards
         get().updateCurrency("xenocoins", 50);
 
-        // Update last check-in date (in a real app, this would be stored in the backend)
+        // Update last check-in date with user ID (in a real app, this would be stored in the backend)
         const today = new Date().toDateString();
-        localStorage.setItem("lastCheckin", today);
+        localStorage.setItem(`lastCheckin_${state.user.id}`, today);
 
         get().addNotification({
           type: "success",
@@ -1516,14 +1564,22 @@ export const useGameStore = create<GameStore>()(
       },
 
       canClaimDailyCheckin: () => {
-        const lastCheckin = localStorage.getItem("lastCheckin");
+        const state = get();
+        if (!state.user) return false;
+
+        const lastCheckin = localStorage.getItem(
+          `lastCheckin_${state.user.id}`,
+        );
         const today = new Date().toDateString();
         return lastCheckin !== today;
       },
 
       getDailyCheckinStreak: () => {
+        const state = get();
+        if (!state.user) return 0;
+
         // In a real app, this would be stored in the backend
-        const streak = localStorage.getItem("checkinStreak");
+        const streak = localStorage.getItem(`checkinStreak_${state.user.id}`);
         return streak ? parseInt(streak, 10) : 0;
       },
 
@@ -1556,6 +1612,10 @@ export const useGameStore = create<GameStore>()(
           notifications: [],
           achievements: [],
           collectibles: [],
+          // Clear egg hatching state for new user
+          selectedEggForHatching: null,
+          isHatchingInProgress: false,
+          hatchingEgg: null,
         });
       },
 
@@ -1581,7 +1641,9 @@ export const useGameStore = create<GameStore>()(
           const collectibles =
             await gameService.getUserCollectedCollectibles(userId);
 
-          set({
+          // Clear egg hatching state if it belongs to a different user
+          const state = get();
+          let updateData: any = {
             pets,
             activePet,
             inventory,
@@ -1590,7 +1652,15 @@ export const useGameStore = create<GameStore>()(
             notifications,
             achievements,
             collectibles,
-          });
+          };
+
+          if (state.hatchingEgg && state.hatchingEgg.userId !== userId) {
+            updateData.selectedEggForHatching = null;
+            updateData.isHatchingInProgress = false;
+            updateData.hatchingEgg = null;
+          }
+
+          set(updateData);
         } catch (error) {
           console.error("Error loading user data:", error);
         }
@@ -1648,8 +1718,21 @@ export const useGameStore = create<GameStore>()(
             state.collectibles = state.collectibles.map(rehydrateDates);
           if (state.redeemCodes)
             state.redeemCodes = state.redeemCodes.map(rehydrateDates);
-          if (state.hatchingEgg)
+          if (state.hatchingEgg) {
             state.hatchingEgg = rehydrateDates(state.hatchingEgg);
+
+            // Validate that hatching egg belongs to current user
+            if (
+              state.user &&
+              state.hatchingEgg &&
+              state.hatchingEgg.userId !== state.user.id
+            ) {
+              // Clear invalid hatching state from different user
+              state.selectedEggForHatching = null;
+              state.isHatchingInProgress = false;
+              state.hatchingEgg = null;
+            }
+          }
         }
       },
     },
