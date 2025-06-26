@@ -105,34 +105,122 @@ const createMockClient = () => ({
       data: { subscription: { unsubscribe: () => {} } },
     }),
   },
-  from: (table: string) => ({
-    select: () => ({
-      eq: () => ({
-        single: () => Promise.resolve({ data: null, error: null }),
-        limit: () => Promise.resolve({ data: [], error: null }),
+  from: (table: string) => {
+    const mockQueryBuilder = {
+      select: (columns?: string) => ({
+        eq: (column: string, value: any) => ({
+          order: (column: string, options?: any) => ({
+            limit: (count: number) =>
+              Promise.resolve({
+                data:
+                  table === "profiles"
+                    ? [
+                        {
+                          id: "mock-user-123",
+                          xenocoins: 1000,
+                          cash: 100,
+                          username: "Demo User",
+                          account_score: 0,
+                          created_at: new Date().toISOString(),
+                          last_login: new Date().toISOString(),
+                          is_admin: false,
+                          days_played: 1,
+                          total_xenocoins: 1000,
+                        },
+                      ]
+                    : [],
+                error: null,
+              }),
+            then: (callback: any) =>
+              callback({
+                data:
+                  table === "profiles"
+                    ? [
+                        {
+                          id: "mock-user-123",
+                          xenocoins: 1000,
+                          cash: 100,
+                          username: "Demo User",
+                          account_score: 0,
+                          created_at: new Date().toISOString(),
+                          last_login: new Date().toISOString(),
+                          is_admin: false,
+                          days_played: 1,
+                          total_xenocoins: 1000,
+                        },
+                      ]
+                    : [],
+                error: null,
+              }),
+          }),
+          single: () =>
+            Promise.resolve({
+              data:
+                table === "profiles"
+                  ? {
+                      id: "mock-user-123",
+                      xenocoins: 1000,
+                      cash: 100,
+                      username: "Demo User",
+                    }
+                  : null,
+              error: null,
+            }),
+          limit: (count: number) => Promise.resolve({ data: [], error: null }),
+          then: (callback: any) => callback({ data: [], error: null }),
+        }),
+        order: (column: string, options?: any) => ({
+          eq: (column: string, value: any) => ({
+            limit: (count: number) =>
+              Promise.resolve({ data: [], error: null }),
+            then: (callback: any) => callback({ data: [], error: null }),
+          }),
+          limit: (count: number) => Promise.resolve({ data: [], error: null }),
+          then: (callback: any) => callback({ data: [], error: null }),
+        }),
+        single: () =>
+          Promise.resolve({
+            data:
+              table === "profiles"
+                ? {
+                    id: "mock-user-123",
+                    xenocoins: 1000,
+                    cash: 100,
+                    username: "Demo User",
+                  }
+                : null,
+            error: null,
+          }),
+        limit: (count: number) => Promise.resolve({ data: [], error: null }),
         then: (callback: any) => callback({ data: [], error: null }),
       }),
-      single: () => Promise.resolve({ data: null, error: null }),
-      limit: () => Promise.resolve({ data: [], error: null }),
-      then: (callback: any) => callback({ data: [], error: null }),
-    }),
-    insert: () => ({
-      select: () => ({
-        single: () => Promise.resolve({ data: { id: "mock-id" }, error: null }),
+      insert: (data: any) => ({
+        select: (columns?: string) => ({
+          single: () =>
+            Promise.resolve({ data: { id: "mock-id", ...data }, error: null }),
+        }),
       }),
-    }),
-    update: () => ({
-      eq: () => Promise.resolve({ data: null, error: null }),
-    }),
-    delete: () => ({
-      eq: () => Promise.resolve({ data: null, error: null }),
-    }),
-    upsert: () => ({
-      select: () => ({
-        single: () => Promise.resolve({ data: { id: "mock-id" }, error: null }),
+      update: (data: any) => ({
+        eq: (column: string, value: any) =>
+          Promise.resolve({ data: null, error: null }),
       }),
-    }),
-  }),
+      delete: () => ({
+        eq: (column: string, value: any) =>
+          Promise.resolve({ data: null, error: null }),
+      }),
+      upsert: (data: any) => ({
+        select: (columns?: string) => ({
+          single: () =>
+            Promise.resolve({ data: { id: "mock-id", ...data }, error: null }),
+        }),
+      }),
+    };
+    return mockQueryBuilder;
+  },
+  rpc: (functionName: string, params?: any) => {
+    console.log(`Mock RPC call: ${functionName}`, params);
+    return Promise.resolve({ data: true, error: null });
+  },
   channel: () => ({
     on: () => ({ subscribe: () => Promise.resolve() }),
     unsubscribe: () => Promise.resolve(),
