@@ -1704,8 +1704,21 @@ export const useGameStore = create<GameStore>()(
             state.collectibles = state.collectibles.map(rehydrateDates);
           if (state.redeemCodes)
             state.redeemCodes = state.redeemCodes.map(rehydrateDates);
-          if (state.hatchingEgg)
+          if (state.hatchingEgg) {
             state.hatchingEgg = rehydrateDates(state.hatchingEgg);
+
+            // Validate that hatching egg belongs to current user
+            if (
+              state.user &&
+              state.hatchingEgg &&
+              state.hatchingEgg.userId !== state.user.id
+            ) {
+              // Clear invalid hatching state from different user
+              state.selectedEggForHatching = null;
+              state.isHatchingInProgress = false;
+              state.hatchingEgg = null;
+            }
+          }
         }
       },
     },
