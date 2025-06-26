@@ -278,7 +278,7 @@ export const WorldScreen: React.FC = () => {
         >
           {/* Cosmic Background Elements */}
           <div
-            className="absolute inset-0 w-full h-full"
+            className="absolute inset-0 w-full h-full pointer-events-none"
             style={{
               backgroundImage: `
                 radial-gradient(circle at 20% 30%, rgba(147, 51, 234, 0.3) 0%, transparent 50%),
@@ -290,7 +290,7 @@ export const WorldScreen: React.FC = () => {
             }}
           >
             {/* Flowing Energy Lines */}
-            <svg className="absolute inset-0 w-full h-full opacity-20">
+            <svg className="absolute inset-0 w-full h-full opacity-20 pointer-events-none">
               <defs>
                 <linearGradient
                   id="energyGradient"
@@ -314,6 +314,7 @@ export const WorldScreen: React.FC = () => {
                     stroke="url(#energyGradient)"
                     strokeWidth="1"
                     fill="none"
+                    style={{ pointerEvents: "none" }}
                     initial={{ pathLength: 0 }}
                     animate={{ pathLength: 1 }}
                     transition={{
@@ -332,7 +333,7 @@ export const WorldScreen: React.FC = () => {
               <motion.button
                 key={point.id}
                 onClick={() => handlePointClick(point)}
-                className={`absolute transform -translate-x-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-gradient-to-br from-purple-500 to-blue-600 flex items-center justify-center text-white shadow-lg ${point.glowColor} transition-all duration-300 hover:scale-110 border-2 border-white/30`}
+                className={`absolute transform -translate-x-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-gradient-to-br from-purple-500 to-blue-600 flex items-center justify-center text-white shadow-lg ${point.glowColor} transition-all duration-300 hover:scale-110 border-2 border-white/30 pointer-events-auto`}
                 style={{
                   left: `${point.x}%`,
                   top: `${point.y}%`,
