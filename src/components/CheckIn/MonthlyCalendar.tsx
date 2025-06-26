@@ -304,8 +304,8 @@ export const MonthlyCalendar: React.FC<MonthlyCalendarProps> = ({
                   <span className="text-xs font-bold mb-1">{day}</span>
 
                   {/* Reward icon */}
-                  <motion.span
-                    className="text-lg"
+                  <motion.div
+                    className="w-5 h-5 flex items-center justify-center"
                     animate={
                       isClaiming
                         ? {
@@ -316,8 +316,16 @@ export const MonthlyCalendar: React.FC<MonthlyCalendarProps> = ({
                     }
                     transition={{ duration: 0.8 }}
                   >
-                    {reward.icon}
-                  </motion.span>
+                    {reward.icon.startsWith("http") ? (
+                      <img
+                        src={reward.icon}
+                        alt={reward.type === "cash" ? "Xenocash" : "Xenocoins"}
+                        className="w-5 h-5"
+                      />
+                    ) : (
+                      <span className="text-lg">{reward.icon}</span>
+                    )}
+                  </motion.div>
 
                   {/* Subtle reward amount indicator */}
                   {!reward.claimed && (
