@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Heart } from "lucide-react";
+
 import { useGameStore } from "../../store/gameStore";
 import { EggPortrait } from "./EggPortrait";
 
