@@ -27,6 +27,7 @@ interface GameStore extends GameState {
   hatchingEgg: {
     eggData: any;
     startTime: Date;
+    userId: string; // Track which user this hatching belongs to
   } | null;
   setSelectedEggForHatching: (eggData: any) => void;
   clearSelectedEggForHatching: () => void;
@@ -668,7 +669,36 @@ export const useGameStore = create<GameStore>()(
       hatchingEgg: null,
 
       // Core actions
-      setUser: (user) => set({ user }),
+      setUser: (user) => {
+        const state = get();
+
+        // If switching to a different user, clear egg hatching state
+        if (user && state.user && user.id !== state.user.id) {
+          set({
+            user,
+            selectedEggForHatching: null,
+            isHatchingInProgress: false,
+            hatchingEgg: null,
+          });
+        } else if (!user) {
+          // Logging out, clear all user-specific state
+          set({
+            user: null,
+            pets: [],
+            inventory: [],
+            xenocoins: 0,
+            cash: 0,
+            notifications: [],
+            achievements: [],
+            collectibles: [],
+            selectedEggForHatching: null,
+            isHatchingInProgress: false,
+            hatchingEgg: null,
+          });
+        } else {
+          set({ user });
+        }
+      },
       setActivePet: (pet) => set({ activePet: pet }),
       setCurrentScreen: (screen) => set({ currentScreen: screen }),
       setViewedUserId: (userId) => set({ viewedUserId: userId }),
@@ -679,17 +709,29 @@ export const useGameStore = create<GameStore>()(
       clearSelectedEggForHatching: () => set({ selectedEggForHatching: null }),
       setIsHatchingInProgress: (isHatching) =>
         set({ isHatchingInProgress: isHatching }),
-      setHatchingEgg: (eggData) =>
+      setHatchingEgg: (eggData) => {
+        const state = get();
+        if (!state.user) return;
+
         set({
           hatchingEgg: {
             eggData,
             startTime: new Date(),
+            userId: state.user.id,
           },
-        }),
+        });
+      },
       clearHatchingEgg: () => set({ hatchingEgg: null }),
       getHatchingTimeRemaining: () => {
         const state = get();
-        if (!state.hatchingEgg) return 0;
+        if (!state.hatchingEgg || !state.user) return 0;
+
+        // Check if the hatching egg belongs to the current user
+        if (state.hatchingEgg.userId !== state.user.id) {
+          // Clear invalid hatching state
+          get().clearHatchingEgg();
+          return 0;
+        }
 
         const elapsedTime = Date.now() - state.hatchingEgg.startTime.getTime();
         const hatchingDuration = 3 * 60 * 1000; // 3 minutes in milliseconds
@@ -1556,6 +1598,10 @@ export const useGameStore = create<GameStore>()(
           notifications: [],
           achievements: [],
           collectibles: [],
+          // Clear egg hatching state for new user
+          selectedEggForHatching: null,
+          isHatchingInProgress: false,
+          hatchingEgg: null,
         });
       },
 
@@ -1581,7 +1627,9 @@ export const useGameStore = create<GameStore>()(
           const collectibles =
             await gameService.getUserCollectedCollectibles(userId);
 
-          set({
+          // Clear egg hatching state if it belongs to a different user
+          const state = get();
+          let updateData: any = {
             pets,
             activePet,
             inventory,
@@ -1590,7 +1638,15 @@ export const useGameStore = create<GameStore>()(
             notifications,
             achievements,
             collectibles,
-          });
+          };
+
+          if (state.hatchingEgg && state.hatchingEgg.userId !== userId) {
+            updateData.selectedEggForHatching = null;
+            updateData.isHatchingInProgress = false;
+            updateData.hatchingEgg = null;
+          }
+
+          set(updateData);
         } catch (error) {
           console.error("Error loading user data:", error);
         }
