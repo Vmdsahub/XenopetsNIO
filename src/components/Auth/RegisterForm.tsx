@@ -322,7 +322,10 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({
           <div className="flex justify-center">
             <ReCAPTCHA
               ref={recaptchaRef}
-              sitekey="6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI" // Test key - replace with your actual site key
+              sitekey={
+                import.meta.env.VITE_RECAPTCHA_SITE_KEY ||
+                "6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI"
+              }
               onChange={(value) => setCaptchaValue(value)}
               onExpired={() => setCaptchaValue(null)}
               theme="light"
