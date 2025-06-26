@@ -46,9 +46,20 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({
       return;
     }
 
+    if (!captchaValue) {
+      // You could set an error state here if needed
+      return;
+    }
+
     const success = await register(credentials);
     if (success) {
       // Navigation will be handled by the main App component
+    } else {
+      // Reset captcha on error
+      if (recaptchaRef.current) {
+        recaptchaRef.current.reset();
+        setCaptchaValue(null);
+      }
     }
   };
 
