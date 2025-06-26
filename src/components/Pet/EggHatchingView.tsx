@@ -27,12 +27,19 @@ export const EggHatchingView: React.FC<EggHatchingViewProps> = ({
     getHatchingTimeRemaining,
   } = useGameStore();
 
-  // Initialize hatching egg if not already set
+  // If no user is logged in, redirect back
+  if (!user) {
+    console.warn("No user logged in for egg hatching");
+    onHatchComplete();
+    return null;
+  }
+
+  // Initialize hatching egg if not already set, but only for current user
   useEffect(() => {
-    if (!hatchingEgg) {
+    if (!hatchingEgg && user) {
       setHatchingEgg(eggData);
     }
-  }, [eggData, hatchingEgg, setHatchingEgg]);
+  }, [eggData, hatchingEgg, setHatchingEgg, user]);
 
   // Calculate time remaining from global store
   const timeRemainingMs = getHatchingTimeRemaining();
