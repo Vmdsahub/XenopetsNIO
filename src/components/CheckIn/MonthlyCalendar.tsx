@@ -308,17 +308,14 @@ export const MonthlyCalendar: React.FC<MonthlyCalendarProps> = ({
                     {reward.icon}
                   </motion.span>
 
-                  {/* Reward amount for special days */}
-                  {(day === 10 ||
-                    day === 15 ||
-                    day === 20 ||
-                    day === 30 ||
-                    day === 31) &&
-                    !reward.claimed && (
-                      <div className="absolute -top-2 -left-2 bg-gradient-to-r from-yellow-400 to-orange-500 text-white text-xs px-1 py-0.5 rounded-full font-bold shadow-lg">
-                        {reward.amount}
-                      </div>
-                    )}
+                  {/* Subtle reward amount indicator */}
+                  {!reward.claimed && (
+                    <div className="absolute -bottom-1 -right-1 bg-black/20 text-white text-xs px-1.5 py-0.5 rounded-full font-medium shadow-sm">
+                      {reward.type === "cash"
+                        ? `$${reward.amount}`
+                        : `${reward.amount}`}
+                    </div>
+                  )}
 
                   {/* Claimed check mark */}
                   {reward.claimed && (
