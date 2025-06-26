@@ -72,10 +72,18 @@ export const MonthlyCalendar: React.FC<MonthlyCalendarProps> = ({
 
     if (dayOfWeek === 0) {
       // Sunday: 1 Xenocash
-      reward = { type: "cash" as const, amount: 1, icon: "💰" };
+      reward = {
+        type: "cash" as const,
+        amount: 1,
+        icon: "https://cdn.builder.io/api/v1/image/assets%2Ff481900009a94cda953c032479392a30%2F8bb45b10e920461dae796f0f945a1b33?format=webp&width=800",
+      };
     } else {
       // All other days: 100 Xenocoins
-      reward = { type: "xenocoins" as const, amount: 100, icon: "🪙" };
+      reward = {
+        type: "xenocoins" as const,
+        amount: 100,
+        icon: "https://cdn.builder.io/api/v1/image/assets%2Ff481900009a94cda953c032479392a30%2F3e6c6cb85c6a4d2ba05acb245bfbc214?format=webp&width=800",
+      };
     }
 
     // Debug log to verify the new system is working
