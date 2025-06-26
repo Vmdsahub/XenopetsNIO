@@ -1,23 +1,40 @@
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { ArrowLeft, Sparkles } from "lucide-react";
+import {
+  ArrowLeft,
+  Sparkles,
+  Globe,
+  Star,
+  Rocket,
+  Zap,
+  Home,
+} from "lucide-react";
 import { useGameStore } from "../../store/gameStore";
 
-interface InteractivePoint {
+interface StoredInteractivePoint {
   id: string;
   name: string;
   x: number;
   y: number;
   imageUrl: string;
   description: string;
-  icon: React.ReactNode;
+  iconName: string;
   glowColor: string;
 }
 
+// Icon mapping to recreate React components
+const iconMap: Record<string, React.ReactNode> = {
+  Sparkles: <Sparkles className="w-5 h-5" />,
+  Globe: <Globe className="w-5 h-5" />,
+  Star: <Star className="w-5 h-5" />,
+  Rocket: <Rocket className="w-5 h-5" />,
+  Zap: <Zap className="w-5 h-5" />,
+  Home: <Home className="w-5 h-5" />,
+};
+
 export const WorldPointImageScreen: React.FC = () => {
-  const [selectedPoint, setSelectedPoint] = useState<InteractivePoint | null>(
-    null,
-  );
+  const [selectedPoint, setSelectedPoint] =
+    useState<StoredInteractivePoint | null>(null);
   const { setCurrentScreen } = useGameStore();
 
   useEffect(() => {
@@ -62,7 +79,9 @@ export const WorldPointImageScreen: React.FC = () => {
 
           <div className="flex items-center space-x-2">
             <div className="w-6 h-6 bg-gradient-to-br from-purple-500 to-blue-600 rounded-full flex items-center justify-center">
-              {selectedPoint.icon}
+              {iconMap[selectedPoint.iconName] || (
+                <Sparkles className="w-5 h-5" />
+              )}
             </div>
             <h1 className="text-lg font-bold">{selectedPoint.name}</h1>
           </div>
