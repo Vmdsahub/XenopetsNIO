@@ -117,15 +117,15 @@ const createMockClient = () => ({
                     ? [
                         {
                           id: "mock-user-123",
-                          xenocoins: 1000,
-                          cash: 100,
+                          xenocoins: 0,
+                          cash: 0,
                           username: "Demo User",
                           account_score: 0,
                           created_at: new Date().toISOString(),
                           last_login: new Date().toISOString(),
                           is_admin: false,
                           days_played: 1,
-                          total_xenocoins: 1000,
+                          total_xenocoins: 0,
                         },
                       ]
                     : [],
@@ -138,15 +138,15 @@ const createMockClient = () => ({
                     ? [
                         {
                           id: "mock-user-123",
-                          xenocoins: 1000,
-                          cash: 100,
+                          xenocoins: 0,
+                          cash: 0,
                           username: "Demo User",
                           account_score: 0,
                           created_at: new Date().toISOString(),
                           last_login: new Date().toISOString(),
                           is_admin: false,
                           days_played: 1,
-                          total_xenocoins: 1000,
+                          total_xenocoins: 0,
                         },
                       ]
                     : [],
@@ -159,8 +159,8 @@ const createMockClient = () => ({
                 table === "profiles"
                   ? {
                       id: "mock-user-123",
-                      xenocoins: 1000,
-                      cash: 100,
+                      xenocoins: 0,
+                      cash: 0,
                       username: "Demo User",
                     }
                   : null,
@@ -184,8 +184,8 @@ const createMockClient = () => ({
               table === "profiles"
                 ? {
                     id: "mock-user-123",
-                    xenocoins: 1000,
-                    cash: 100,
+                    xenocoins: 0,
+                    cash: 0,
                     username: "Demo User",
                   }
                 : null,
