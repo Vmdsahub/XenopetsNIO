@@ -112,7 +112,11 @@ export const TopBar: React.FC = () => {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
-              <Coins className="w-4 h-4 text-yellow-600" />
+              <img
+                src="https://cdn.builder.io/api/v1/image/assets%2Ff481900009a94cda953c032479392a30%2F3e6c6cb85c6a4d2ba05acb245bfbc214?format=webp&width=800"
+                alt="Xenocoins"
+                className="w-4 h-4"
+              />
               <span className="text-sm font-semibold text-yellow-800">
                 {xenocoins.toLocaleString()}
               </span>
@@ -124,9 +128,11 @@ export const TopBar: React.FC = () => {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
-              <div className="w-4 h-4 bg-green-600 rounded-full flex items-center justify-center">
-                <span className="text-white text-xs font-bold">$</span>
-              </div>
+              <img
+                src="https://cdn.builder.io/api/v1/image/assets%2Ff481900009a94cda953c032479392a30%2F8bb45b10e920461dae796f0f945a1b33?format=webp&width=800"
+                alt="Xenocash"
+                className="w-4 h-4"
+              />
               <span className="text-sm font-semibold text-green-800">
                 {cash}
               </span>
