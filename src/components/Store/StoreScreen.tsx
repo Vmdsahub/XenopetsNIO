@@ -233,19 +233,23 @@ export const StoreScreen: React.FC = () => {
           {/* Currency Display */}
           <div className="flex items-center justify-between text-sm">
             <span className="text-gray-600">Your Balance:</span>
-          <div className="flex items-center space-x-2">
-            {storeItem.currency === 'xenocoins' ? (
-              <img
-                src="https://cdn.builder.io/api/v1/image/assets%2Ff481900009a94cda953c032479392a30%2F3e6c6cb85c6a4d2ba05acb245bfbc214?format=webp&width=800"
-                alt="Xenocoins"
-                className="w-6 h-6"
-              />
-            ) : (
-              <img
-                src="https://cdn.builder.io/api/v1/image/assets%2Ff481900009a94cda953c032479392a30%2F8bb45b10e920461dae796f0f945a1b33?format=webp&width=800"
-                alt="Xenocash"
-                className="w-6 h-6"
-              />
+            <div className="flex items-center space-x-4">
+              <div className="flex items-center space-x-1">
+                <img
+                  src="https://cdn.builder.io/api/v1/image/assets%2Ff481900009a94cda953c032479392a30%2F3e6c6cb85c6a4d2ba05acb245bfbc214?format=webp&width=800"
+                  alt="Xenocoins"
+                  className="w-5 h-5"
+                />
+                <span className="font-medium">
+                  {xenocoins.toLocaleString()}
+                </span>
+              </div>
+              <div className="flex items-center space-x-1">
+                <img
+                  src="https://cdn.builder.io/api/v1/image/assets%2Ff481900009a94cda953c032479392a30%2F8bb45b10e920461dae796f0f945a1b33?format=webp&width=800"
+                  alt="Xenocash"
+                  className="w-5 h-5"
+                />
                 <span className="font-medium">{cash}</span>
               </div>
             </div>
@@ -352,7 +356,9 @@ export const StoreScreen: React.FC = () => {
                 alt="Xenocoins"
                 className="w-5 h-5"
               />
-              <span className="font-bold text-yellow-800">{xenocoins.toLocaleString()}</span>
+              <span className="font-bold text-yellow-800">
+                {xenocoins.toLocaleString()}
+              </span>
             </div>
             <div className="flex items-center space-x-1">
               <img
@@ -508,7 +514,7 @@ export const StoreScreen: React.FC = () => {
                           {item.itemSlug}
                         </p>
                         <div className="flex items-center justify-center space-x-1 mt-1">
-                          {item.currency === 'xenocoins' ? (
+                          {item.currency === "xenocoins" ? (
                             <img
                               src="https://cdn.builder.io/api/v1/image/assets%2Ff481900009a94cda953c032479392a30%2F3e6c6cb85c6a4d2ba05acb245bfbc214?format=webp&width=800"
                               alt="Xenocoins"
@@ -964,20 +970,20 @@ const PurchaseModal: React.FC<{
       <div className="bg-blue-50 rounded-xl p-4 mb-6">
         <div className="flex justify-between items-center">
           <span className="font-medium text-blue-900">Total Cost:</span>
-        <div className="flex items-center space-x-2">
-          {storeItem.currency === 'xenocoins' ? (
-            <img
-              src="https://cdn.builder.io/api/v1/image/assets%2Ff481900009a94cda953c032479392a30%2F3e6c6cb85c6a4d2ba05acb245bfbc214?format=webp&width=800"
-              alt="Xenocoins"
-              className="w-6 h-6"
-            />
-          ) : (
-            <img
-              src="https://cdn.builder.io/api/v1/image/assets%2Ff481900009a94cda953c032479392a30%2F8bb45b10e920461dae796f0f945a1b33?format=webp&width=800"
-              alt="Xenocash"
-              className="w-6 h-6"
-            />
-          )}
+          <div className="flex items-center space-x-2">
+            {storeItem.currency === "xenocoins" ? (
+              <img
+                src="https://cdn.builder.io/api/v1/image/assets%2Ff481900009a94cda953c032479392a30%2F3e6c6cb85c6a4d2ba05acb245bfbc214?format=webp&width=800"
+                alt="Xenocoins"
+                className="w-6 h-6"
+              />
+            ) : (
+              <img
+                src="https://cdn.builder.io/api/v1/image/assets%2Ff481900009a94cda953c032479392a30%2F8bb45b10e920461dae796f0f945a1b33?format=webp&width=800"
+                alt="Xenocash"
+                className="w-6 h-6"
+              />
+            )}
             <span className="font-bold text-xl text-blue-900">
               {totalCost.toLocaleString()}
             </span>
