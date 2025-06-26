@@ -360,7 +360,7 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({
           {/* Submit Button */}
           <motion.button
             type="submit"
-            disabled={isLoading || !acceptTerms}
+            disabled={isLoading || !acceptTerms || !captchaValue}
             className="w-full bg-gradient-to-r from-green-600 to-blue-600 text-white py-3 rounded-xl hover:from-green-700 hover:to-blue-700 transition-all font-semibold shadow-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
