@@ -681,7 +681,13 @@ export const useGameStore = create<GameStore>()(
             hatchingEgg: null,
           });
         } else if (!user) {
-          // Logging out, clear all user-specific state
+          // Logging out, clear all user-specific state and localStorage
+          if (state.user) {
+            // Clear user-specific localStorage items
+            localStorage.removeItem(`lastCheckin_${state.user.id}`);
+            localStorage.removeItem(`checkinStreak_${state.user.id}`);
+          }
+
           set({
             user: null,
             pets: [],
@@ -1540,14 +1546,14 @@ export const useGameStore = create<GameStore>()(
       // Daily check-in system
       dailyCheckin: () => {
         const state = get();
-        if (!get().canClaimDailyCheckin()) return;
+        if (!state.user || !get().canClaimDailyCheckin()) return;
 
         // Award daily check-in rewards
         get().updateCurrency("xenocoins", 50);
 
-        // Update last check-in date (in a real app, this would be stored in the backend)
+        // Update last check-in date with user ID (in a real app, this would be stored in the backend)
         const today = new Date().toDateString();
-        localStorage.setItem("lastCheckin", today);
+        localStorage.setItem(`lastCheckin_${state.user.id}`, today);
 
         get().addNotification({
           type: "success",
@@ -1558,14 +1564,22 @@ export const useGameStore = create<GameStore>()(
       },
 
       canClaimDailyCheckin: () => {
-        const lastCheckin = localStorage.getItem("lastCheckin");
+        const state = get();
+        if (!state.user) return false;
+
+        const lastCheckin = localStorage.getItem(
+          `lastCheckin_${state.user.id}`,
+        );
         const today = new Date().toDateString();
         return lastCheckin !== today;
       },
 
       getDailyCheckinStreak: () => {
+        const state = get();
+        if (!state.user) return 0;
+
         // In a real app, this would be stored in the backend
-        const streak = localStorage.getItem("checkinStreak");
+        const streak = localStorage.getItem(`checkinStreak_${state.user.id}`);
         return streak ? parseInt(streak, 10) : 0;
       },
 
