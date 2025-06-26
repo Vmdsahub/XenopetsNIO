@@ -106,7 +106,7 @@ export const EggSelectionScreen: React.FC<EggSelectionScreenProps> = ({
           >
             <div className="p-6 text-center">
               {/* Egg Portrait */}
-              <div className="w-20 h-20 mx-auto mb-4 bg-gray-50 rounded-full flex items-center justify-center text-4xl">
+              <div className="w-28 h-28 mx-auto mb-4 bg-gradient-to-br from-gray-50 to-gray-100 rounded-full flex items-center justify-center text-6xl shadow-inner border-2 border-gray-200">
                 {egg.emoji}
               </div>
 

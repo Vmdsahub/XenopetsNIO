@@ -17,20 +17,26 @@ export const PetScreen: React.FC = () => {
     setActivePet,
     createPet,
     setCurrentScreen,
+    selectedEggForHatching,
+    isHatchingInProgress,
+    setSelectedEggForHatching,
+    clearSelectedEggForHatching,
+    setIsHatchingInProgress,
+    clearHatchingEgg,
   } = useGameStore();
 
-  const [selectedEgg, setSelectedEgg] = useState<any>(null);
-  const [isHatching, setIsHatching] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
   const handleEggSelected = (egg: any) => {
-    setSelectedEgg(egg);
-    setIsHatching(true);
+    setSelectedEggForHatching(egg);
+    setIsHatchingInProgress(true);
+    // Note: setHatchingEgg will be called by EggHatchingView when it initializes
   };
 
   const handleHatchComplete = () => {
-    setSelectedEgg(null);
-    setIsHatching(false);
+    clearSelectedEggForHatching();
+    setIsHatchingInProgress(false);
+    clearHatchingEgg();
     // The egg hatching component will handle pet creation
   };
 
@@ -45,10 +51,10 @@ export const PetScreen: React.FC = () => {
   };
 
   // If user is hatching an egg, show the hatching screen
-  if (isHatching && selectedEgg) {
+  if (isHatchingInProgress && selectedEggForHatching) {
     return (
       <EggHatchingView
-        eggData={selectedEgg}
+        eggData={selectedEggForHatching}
         onHatchComplete={handleHatchComplete}
       />
     );

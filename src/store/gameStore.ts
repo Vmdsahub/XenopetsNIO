@@ -662,11 +662,39 @@ export const useGameStore = create<GameStore>()(
       ],
       viewedUserId: null,
 
+      // Egg selection and hatching state
+      selectedEggForHatching: null,
+      isHatchingInProgress: false,
+      hatchingEgg: null,
+
       // Core actions
       setUser: (user) => set({ user }),
       setActivePet: (pet) => set({ activePet: pet }),
       setCurrentScreen: (screen) => set({ currentScreen: screen }),
       setViewedUserId: (userId) => set({ viewedUserId: userId }),
+
+      // Egg selection and hatching actions
+      setSelectedEggForHatching: (eggData) =>
+        set({ selectedEggForHatching: eggData }),
+      clearSelectedEggForHatching: () => set({ selectedEggForHatching: null }),
+      setIsHatchingInProgress: (isHatching) =>
+        set({ isHatchingInProgress: isHatching }),
+      setHatchingEgg: (eggData) =>
+        set({
+          hatchingEgg: {
+            eggData,
+            startTime: new Date(),
+          },
+        }),
+      clearHatchingEgg: () => set({ hatchingEgg: null }),
+      getHatchingTimeRemaining: () => {
+        const state = get();
+        if (!state.hatchingEgg) return 0;
+
+        const elapsedTime = Date.now() - state.hatchingEgg.startTime.getTime();
+        const hatchingDuration = 3 * 60 * 1000; // 3 minutes in milliseconds
+        return Math.max(0, hatchingDuration - elapsedTime);
+      },
 
       // Pet management
       createPet: async (petData) => {
@@ -1599,6 +1627,9 @@ export const useGameStore = create<GameStore>()(
         achievements: state.achievements,
         collectibles: state.collectibles,
         redeemCodes: state.redeemCodes,
+        selectedEggForHatching: state.selectedEggForHatching,
+        isHatchingInProgress: state.isHatchingInProgress,
+        hatchingEgg: state.hatchingEgg,
       }),
       onRehydrateStorage: () => (state) => {
         if (state) {
@@ -1617,6 +1648,8 @@ export const useGameStore = create<GameStore>()(
             state.collectibles = state.collectibles.map(rehydrateDates);
           if (state.redeemCodes)
             state.redeemCodes = state.redeemCodes.map(rehydrateDates);
+          if (state.hatchingEgg)
+            state.hatchingEgg = rehydrateDates(state.hatchingEgg);
         }
       },
     },

@@ -34,20 +34,29 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [acceptTerms, setAcceptTerms] = useState(false);
   const [captchaValue, setCaptchaValue] = useState<string | null>(null);
+  const [captchaError, setCaptchaError] = useState<string | null>(null);
   const recaptchaRef = useRef<ReCAPTCHA>(null);
 
   const { register, isLoading, error, clearError } = useAuthStore();
 
+  // Check if reCAPTCHA is properly configured
+  const recaptchaSiteKey = import.meta.env.VITE_RECAPTCHA_SITE_KEY;
+  const isRecaptchaEnabled =
+    recaptchaSiteKey &&
+    recaptchaSiteKey !== "6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI";
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     clearError();
+    setCaptchaError(null);
 
     if (!acceptTerms) {
       return;
     }
 
-    if (!captchaValue) {
-      // You could set an error state here if needed
+    // Only require captcha if it's enabled and properly configured
+    if (isRecaptchaEnabled && !captchaValue) {
+      setCaptchaError("Por favor, complete a verificação reCAPTCHA");
       return;
     }
 
@@ -319,18 +328,50 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({
           </div>
 
           {/* Captcha */}
-          <div className="flex justify-center">
-            <ReCAPTCHA
-              ref={recaptchaRef}
-              sitekey={
-                import.meta.env.VITE_RECAPTCHA_SITE_KEY ||
-                "6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI"
-              }
-              onChange={(value) => setCaptchaValue(value)}
-              onExpired={() => setCaptchaValue(null)}
-              theme="light"
-            />
-          </div>
+          {recaptchaSiteKey && (
+            <div>
+              <div className="flex justify-center">
+                <ReCAPTCHA
+                  ref={recaptchaRef}
+                  sitekey={recaptchaSiteKey}
+                  onChange={(value) => {
+                    setCaptchaValue(value);
+                    setCaptchaError(null);
+                  }}
+                  onExpired={() => setCaptchaValue(null)}
+                  onError={() =>
+                    setCaptchaError(
+                      "Erro ao carregar reCAPTCHA. Tente recarregar a página.",
+                    )
+                  }
+                  theme="light"
+                />
+              </div>
+              {captchaError && (
+                <motion.div
+                  className="mt-2 p-3 bg-red-50 border border-red-200 rounded-xl flex items-center space-x-2"
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                >
+                  <AlertCircle className="w-4 h-4 text-red-600 flex-shrink-0" />
+                  <p className="text-red-700 text-sm">{captchaError}</p>
+                </motion.div>
+              )}
+            </div>
+          )}
+
+          {/* Development Notice */}
+          {!recaptchaSiteKey && (
+            <motion.div
+              className="p-3 bg-yellow-50 border border-yellow-200 rounded-xl"
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+            >
+              <p className="text-yellow-800 text-sm text-center">
+                <strong>Modo de Desenvolvimento:</strong> reCAPTCHA desabilitado
+              </p>
+            </motion.div>
+          )}
 
           {/* Terms and Conditions */}
           <div>
@@ -363,7 +404,9 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({
           {/* Submit Button */}
           <motion.button
             type="submit"
-            disabled={isLoading || !acceptTerms || !captchaValue}
+            disabled={
+              isLoading || !acceptTerms || (isRecaptchaEnabled && !captchaValue)
+            }
             className="w-full bg-gradient-to-r from-green-600 to-blue-600 text-white py-3 rounded-xl hover:from-green-700 hover:to-blue-700 transition-all font-semibold shadow-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
