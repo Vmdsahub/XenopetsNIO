@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Heart } from "lucide-react";
+
 import { useGameStore } from "../../store/gameStore";
 import { EggPortrait } from "./EggPortrait";
 
@@ -184,11 +184,8 @@ export const EggHatchingView: React.FC<EggHatchingViewProps> = ({
                 <span className="text-3xl">🎉</span>
               </div>
               <h2 className="text-2xl font-bold text-gray-900 mb-2">
-                Seu pet nasceu!
+                Seu Xenopet nasceu!
               </h2>
-              <p className="text-gray-600">
-                Agora escolha um nome para seu novo {eggData.species}
-              </p>
             </div>
 
             {/* Name Input */}
@@ -207,28 +204,17 @@ export const EggHatchingView: React.FC<EggHatchingViewProps> = ({
                   }
                 }}
               />
-              <p className="text-sm text-gray-500 mt-2">Máximo 20 caracteres</p>
             </div>
 
             {/* Action Buttons */}
             <div className="space-y-3">
               <motion.button
                 onClick={handleNameSubmit}
-                className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 rounded-xl hover:from-blue-700 hover:to-purple-700 transition-all font-semibold shadow-lg flex items-center justify-center space-x-2"
+                className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 px-2 rounded-xl hover:from-blue-700 hover:to-purple-700 transition-all font-semibold shadow-lg"
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
               >
-                <Heart className="w-5 h-5" />
-                <span>Confirmar Nome</span>
-              </motion.button>
-
-              <motion.button
-                onClick={() => handlePetHatch()}
-                className="w-full bg-gray-100 text-gray-700 py-3 rounded-xl hover:bg-gray-200 transition-colors font-medium"
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-              >
-                Gerar nome aleatório
+                Confirmar Nome
               </motion.button>
             </div>
           </motion.div>

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Bell, Coins, X, Check, Trash2, Calendar } from "lucide-react";
+import { Bell, X, Check, Trash2, Calendar } from "lucide-react";
 import { useGameStore } from "../../store/gameStore";
 import { motion, AnimatePresence } from "framer-motion";
 import { MonthlyCalendar } from "../CheckIn/MonthlyCalendar";
@@ -94,13 +94,8 @@ export const TopBar: React.FC = () => {
               </div>
               <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-white"></div>
             </div>
-            <div className="hidden sm:block">
-              <p className="text-sm font-semibold text-gray-900">
-                {user?.username}
-              </p>
-              <p className="text-xs text-gray-500">
-                Score: {user?.accountScore?.toLocaleString()}
-              </p>
+            <div className="hidden sm:block text-sm text-gray-900">
+              {user?.username}
             </div>
           </div>
 
@@ -112,7 +107,11 @@ export const TopBar: React.FC = () => {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
-              <Coins className="w-4 h-4 text-yellow-600" />
+              <img
+                src="https://cdn.builder.io/api/v1/image/assets%2Ff481900009a94cda953c032479392a30%2F3e6c6cb85c6a4d2ba05acb245bfbc214?format=webp&width=800"
+                alt="Xenocoins"
+                className="w-6 h-6"
+              />
               <span className="text-sm font-semibold text-yellow-800">
                 {xenocoins.toLocaleString()}
               </span>
@@ -124,9 +123,11 @@ export const TopBar: React.FC = () => {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
-              <div className="w-4 h-4 bg-green-600 rounded-full flex items-center justify-center">
-                <span className="text-white text-xs font-bold">$</span>
-              </div>
+              <img
+                src="https://cdn.builder.io/api/v1/image/assets%2Ff481900009a94cda953c032479392a30%2F8bb45b10e920461dae796f0f945a1b33?format=webp&width=800"
+                alt="Xenocash"
+                className="w-6 h-6"
+              />
               <span className="text-sm font-semibold text-green-800">
                 {cash}
               </span>

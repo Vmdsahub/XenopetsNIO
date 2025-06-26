@@ -55,13 +55,6 @@ export const BottomNavigation: React.FC = () => {
                 transition={{ duration: 0.3 }}
               >
                 <Icon className="w-6 h-6" />
-                {id === "admin" && (
-                  <motion.div
-                    className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full"
-                    animate={{ scale: [1, 1.2, 1] }}
-                    transition={{ duration: 2, repeat: Infinity }}
-                  />
-                )}
               </motion.div>
               <span
                 className={`text-xs font-medium mt-1 transition-colors ${

@@ -1,16 +1,6 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import {
-  X,
-  Calendar,
-  Coins,
-  DollarSign,
-  Gift,
-  Star,
-  Crown,
-  Gem,
-  Trophy,
-} from "lucide-react";
+import { X, Calendar, Gift, Star, Crown, Gem, Trophy } from "lucide-react";
 import { useGameStore } from "../../store/gameStore";
 
 interface DailyReward {
