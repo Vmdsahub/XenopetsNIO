@@ -94,13 +94,8 @@ export const TopBar: React.FC = () => {
               </div>
               <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-white"></div>
             </div>
-            <div className="hidden sm:block">
-              <p className="text-sm font-semibold text-gray-900">
-                {user?.username}
-              </p>
-              <p className="text-xs text-gray-500">
-                Score: {user?.accountScore?.toLocaleString()}
-              </p>
+            <div className="hidden sm:block text-sm text-gray-900">
+              {user?.username}
             </div>
           </div>
 
