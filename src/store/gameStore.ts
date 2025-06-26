@@ -21,11 +21,16 @@ interface GameStore extends GameState {
   setCurrentScreen: (screen: string) => void;
   setViewedUserId: (userId: string | null) => void;
 
-  // Egg hatching state
+  // Egg selection and hatching state
+  selectedEggForHatching: any | null;
+  isHatchingInProgress: boolean;
   hatchingEgg: {
     eggData: any;
     startTime: Date;
   } | null;
+  setSelectedEggForHatching: (eggData: any) => void;
+  clearSelectedEggForHatching: () => void;
+  setIsHatchingInProgress: (isHatching: boolean) => void;
   setHatchingEgg: (eggData: any) => void;
   clearHatchingEgg: () => void;
   getHatchingTimeRemaining: () => number;

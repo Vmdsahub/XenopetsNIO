@@ -137,7 +137,7 @@ export class SupabaseAuthService {
         language: this.detectLanguage(),
         accountScore: 0,
         daysPlayed: 0,
-        totalXenocoins: 1000,
+        totalXenocoins: 0,
         createdAt: new Date(),
         lastLogin: new Date(),
         preferences: this.getDefaultPreferences(),
