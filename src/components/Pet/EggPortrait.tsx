@@ -50,7 +50,7 @@ export const EggPortrait: React.FC<EggPortraitProps> = ({
 
   return (
     <motion.div
-      className="bg-white rounded-3xl shadow-xl p-6 mb-6 border border-gray-100"
+      className="bg-white rounded-3xl shadow-xl pt-6 px-6 pb-11 mb-8 border border-gray-100"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
@@ -65,13 +65,6 @@ export const EggPortrait: React.FC<EggPortraitProps> = ({
         >
           {eggData.name}
         </motion.h2>
-        <div className="flex items-center justify-center space-x-2">
-          <span className="text-2xl">{getSpeciesEmoji(eggData.species)}</span>
-          <p className="text-gray-600 font-medium">{eggData.species}</p>
-          <div className="px-2 py-1 bg-purple-100 text-purple-700 rounded-full text-xs font-medium">
-            {isHatching ? "Eclodindo!" : "Chocando"}
-          </div>
-        </div>
       </div>
 
       {/* Egg Image Container */}
@@ -181,18 +174,6 @@ export const EggPortrait: React.FC<EggPortraitProps> = ({
               <span className="text-yellow-400">✨</span>
             </motion.div>
           ))}
-
-        {/* Status Badge */}
-        <motion.div
-          className="absolute top-3 left-3 bg-white/90 backdrop-blur-sm rounded-xl px-3 py-1 shadow-lg border border-gray-200"
-          initial={{ x: -20, opacity: 0 }}
-          animate={{ x: 0, opacity: 1 }}
-          transition={{ delay: 0.5 }}
-        >
-          <span className="text-xs font-medium text-purple-700">
-            {isHatching ? "🎉 Nascendo!" : "🥚 Desenvolvendo"}
-          </span>
-        </motion.div>
       </motion.div>
 
       {/* Timer and Progress */}
@@ -202,16 +183,6 @@ export const EggPortrait: React.FC<EggPortraitProps> = ({
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.6 }}
       >
-        {/* Progress Bar */}
-        <div className="bg-gray-200 rounded-full h-3 overflow-hidden">
-          <motion.div
-            className="h-full bg-gradient-to-r from-purple-500 to-pink-500 rounded-full"
-            initial={{ width: 0 }}
-            animate={{ width: `${progressPercentage}%` }}
-            transition={{ duration: 0.5 }}
-          />
-        </div>
-
         {/* Time Display */}
         <div className="flex items-center justify-center space-x-2">
           <Clock className="w-5 h-5 text-gray-500" />
