@@ -17,8 +17,6 @@ import {
   Eye,
   EyeOff,
   Calendar,
-  Coins,
-  DollarSign,
 } from "lucide-react";
 import { useGameStore } from "../../store/gameStore";
 import { RedeemCode } from "../../types/game";

@@ -3,8 +3,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   Store,
   ShoppingCart,
-  Coins,
-  DollarSign,
   Package,
   Clock,
   Star,
