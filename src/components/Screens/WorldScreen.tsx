@@ -94,9 +94,47 @@ export const WorldScreen: React.FC = () => {
   const { setCurrentScreen } = useGameStore();
 
   const handlePointClick = (point: InteractivePoint) => {
+    // Create a serializable version of the point data
+    const serializablePoint = {
+      id: point.id,
+      name: point.name,
+      x: point.x,
+      y: point.y,
+      imageUrl: point.imageUrl,
+      description: point.description,
+      iconName: getIconName(point.icon),
+      glowColor: point.glowColor,
+    };
+
     // Store the selected point data in localStorage to access in the image screen
-    localStorage.setItem("selectedWorldPoint", JSON.stringify(point));
+    localStorage.setItem(
+      "selectedWorldPoint",
+      JSON.stringify(serializablePoint),
+    );
     setCurrentScreen("worldPointImage");
+  };
+
+  // Helper function to get icon name from React component
+  const getIconName = (icon: React.ReactNode): string => {
+    if (React.isValidElement(icon)) {
+      switch (icon.type) {
+        case Sparkles:
+          return "Sparkles";
+        case Globe:
+          return "Globe";
+        case Star:
+          return "Star";
+        case Rocket:
+          return "Rocket";
+        case Zap:
+          return "Zap";
+        case Home:
+          return "Home";
+        default:
+          return "Sparkles";
+      }
+    }
+    return "Sparkles";
   };
 
   return (
