@@ -310,13 +310,12 @@ export const MonthlyCalendar: React.FC<MonthlyCalendarProps> = ({
 
                   {/* Subtle reward amount indicator */}
                   {!reward.claimed && (
-                    <div className="absolute -bottom-1 -right-1 bg-black/20 text-white text-xs px-1.5 py-0.5 rounded-full font-medium shadow-sm">
+                    <div className="absolute -bottom-0.5 -right-0.5 bg-black/30 text-white text-xs px-1 py-0.5 rounded font-medium shadow-sm">
                       {reward.type === "cash"
                         ? `$${reward.amount}`
-                        : `${reward.amount}`}
+                        : reward.amount}
                     </div>
                   )}
-
                   {/* Claimed check mark */}
                   {reward.claimed && (
                     <motion.div
