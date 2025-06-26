@@ -87,6 +87,14 @@ export const MonthlyCalendar: React.FC<MonthlyCalendarProps> = ({
       reward = { type: "xenocoins" as const, amount: 100, icon: "🪙" };
     }
 
+    // Debug log to verify the new system is working
+    if (day <= 5) {
+      console.log(
+        `Day ${day} (${dayOfWeek === 0 ? "Sunday" : "Weekday"}):`,
+        reward,
+      );
+    }
+
     // Check if already claimed (simplified - in real app would check backend)
     const lastCheckin = localStorage.getItem("lastCheckin");
     const lastCheckinDate = lastCheckin ? new Date(lastCheckin) : null;
