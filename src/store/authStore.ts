@@ -1,7 +1,13 @@
-import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
-import { AuthState, AuthUser, LoginCredentials, RegisterCredentials } from '../types/auth';
-import { supabaseAuthService } from '../services/supabaseAuthService';
+import { create } from "zustand";
+import { persist } from "zustand/middleware";
+import {
+  AuthState,
+  AuthUser,
+  LoginCredentials,
+  RegisterCredentials,
+} from "../types/auth";
+import { supabaseAuthService } from "../services/supabaseAuthService";
+import { useGameStore } from "./gameStore";
 
 interface AuthStore extends AuthState {
   // Actions
@@ -13,32 +19,36 @@ interface AuthStore extends AuthState {
   updateUser: (user: Partial<AuthUser>) => void;
   setLoading: (loading: boolean) => void;
   initializeAuth: () => Promise<void>;
+  setUser: (user: AuthUser | null) => void;
 }
 
 // Helper function to convert date strings back to Date objects
 const rehydrateDates = (obj: any): any => {
   if (!obj) return obj;
-  
-  if (typeof obj === 'string' && /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/.test(obj)) {
+
+  if (
+    typeof obj === "string" &&
+    /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/.test(obj)
+  ) {
     return new Date(obj);
   }
-  
+
   if (Array.isArray(obj)) {
     return obj.map(rehydrateDates);
   }
-  
-  if (typeof obj === 'object') {
+
+  if (typeof obj === "object") {
     const result: any = {};
     for (const [key, value] of Object.entries(obj)) {
-      if (key === 'createdAt' || key === 'lastLogin' || key === 'updatedAt') {
-        result[key] = typeof value === 'string' ? new Date(value) : value;
+      if (key === "createdAt" || key === "lastLogin" || key === "updatedAt") {
+        result[key] = typeof value === "string" ? new Date(value) : value;
       } else {
         result[key] = rehydrateDates(value);
       }
     }
     return result;
   }
-  
+
   return obj;
 };
 
@@ -54,61 +64,57 @@ export const useAuthStore = create<AuthStore>()(
       initializeAuth: async () => {
         try {
           set({ isLoading: true });
-          
+
           const user = await supabaseAuthService.getCurrentUser();
           if (user) {
             set({
-              user,
-              token: 'supabase-session',
-              isAuthenticated: true,
+              token: "supabase-session",
               isLoading: false,
-              error: null
+              error: null,
             });
+            get().setUser(user);
           } else {
             set({
-              user: null,
               token: null,
-              isAuthenticated: false,
-              isLoading: false
+              isLoading: false,
             });
+            get().setUser(null);
           }
         } catch (error) {
-          console.error('Auth initialization error:', error);
+          console.error("Auth initialization error:", error);
           set({
-            user: null,
             token: null,
-            isAuthenticated: false,
-            isLoading: false
+            isLoading: false,
           });
+          get().setUser(null);
         }
       },
 
       login: async (credentials: LoginCredentials) => {
         set({ isLoading: true, error: null });
-        
+
         try {
           const response = await supabaseAuthService.login(credentials);
-          
+
           if (response.success && response.user) {
             set({
-              user: response.user,
-              token: response.token || 'supabase-session',
-              isAuthenticated: true,
+              token: response.token || "supabase-session",
               isLoading: false,
-              error: null
+              error: null,
             });
+            get().setUser(response.user);
             return true;
           } else {
             set({
-              error: response.message || 'Login failed',
-              isLoading: false
+              error: response.message || "Login failed",
+              isLoading: false,
             });
             return false;
           }
         } catch (error) {
           set({
-            error: 'Login failed. Please try again.',
-            isLoading: false
+            error: "Login failed. Please try again.",
+            isLoading: false,
           });
           return false;
         }
@@ -116,36 +122,39 @@ export const useAuthStore = create<AuthStore>()(
 
       register: async (credentials: RegisterCredentials) => {
         set({ isLoading: true, error: null });
-        
+
         try {
           // Check if username is "Vitoca" to make admin
           const modifiedCredentials = {
             ...credentials,
-            username: credentials.username.toLowerCase() === 'vitoca' ? 'Vitoca' : credentials.username
+            username:
+              credentials.username.toLowerCase() === "vitoca"
+                ? "Vitoca"
+                : credentials.username,
           };
 
-          const response = await supabaseAuthService.register(modifiedCredentials);
-          
+          const response =
+            await supabaseAuthService.register(modifiedCredentials);
+
           if (response.success && response.user) {
             set({
-              user: response.user,
-              token: response.token || 'supabase-session',
-              isAuthenticated: true,
+              token: response.token || "supabase-session",
               isLoading: false,
-              error: null
+              error: null,
             });
+            get().setUser(response.user);
             return true;
           } else {
             set({
-              error: response.message || 'Registration failed',
-              isLoading: false
+              error: response.message || "Registration failed",
+              isLoading: false,
             });
             return false;
           }
         } catch (error) {
           set({
-            error: 'Registration failed. Please try again.',
-            isLoading: false
+            error: "Registration failed. Please try again.",
+            isLoading: false,
           });
           return false;
         }
@@ -155,37 +164,36 @@ export const useAuthStore = create<AuthStore>()(
         try {
           await supabaseAuthService.logout();
         } catch (error) {
-          console.error('Logout error:', error);
+          console.error("Logout error:", error);
         }
-        
+
         set({
-          user: null,
           token: null,
-          isAuthenticated: false,
-          error: null
+          error: null,
         });
+        get().setUser(null);
       },
 
       resetPassword: async (email: string) => {
         set({ isLoading: true, error: null });
-        
+
         try {
           const response = await supabaseAuthService.resetPassword(email);
-          
+
           if (response.success) {
             set({ isLoading: false });
             return true;
           } else {
             set({
-              error: response.message || 'Password reset failed',
-              isLoading: false
+              error: response.message || "Password reset failed",
+              isLoading: false,
             });
             return false;
           }
         } catch (error) {
           set({
-            error: 'Password reset failed. Please try again.',
-            isLoading: false
+            error: "Password reset failed. Please try again.",
+            isLoading: false,
           });
           return false;
         }
@@ -201,20 +209,45 @@ export const useAuthStore = create<AuthStore>()(
         }
       },
 
-      setLoading: (loading: boolean) => set({ isLoading: loading })
+      setLoading: (loading: boolean) => set({ isLoading: loading }),
+
+      setUser: (user: AuthUser | null) => {
+        const currentUser = get().user;
+        set({ user, isAuthenticated: !!user });
+
+        if (user) {
+          // If switching between different users, clear existing state first
+          if (currentUser && currentUser.id !== user.id) {
+            useGameStore.getState().unsubscribeFromRealtimeUpdates();
+            useGameStore.getState().initializeNewUser(user);
+          } else if (!currentUser) {
+            // First time login
+            useGameStore.getState().initializeNewUser(user);
+          }
+
+          // Load user data and subscribe to updates
+          useGameStore.getState().loadUserData(user.id);
+          useGameStore.getState().subscribeToRealtimeUpdates();
+        } else {
+          // Clear game store when user logs out
+          useGameStore.getState().unsubscribeFromRealtimeUpdates();
+          // Clear all user-specific state
+          useGameStore.getState().setUser(null);
+        }
+      },
     }),
     {
-      name: 'xenopets-auth',
+      name: "xenopets-auth",
       partialize: (state) => ({
         user: state.user,
         token: state.token,
-        isAuthenticated: state.isAuthenticated
+        isAuthenticated: state.isAuthenticated,
       }),
       onRehydrateStorage: () => (state) => {
         if (state?.user) {
           state.user = rehydrateDates(state.user);
         }
-      }
-    }
-  )
+      },
+    },
+  ),
 );
