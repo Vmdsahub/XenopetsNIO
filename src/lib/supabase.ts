@@ -6,7 +6,12 @@ const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
 // Check if we're in development mode with mock values
 const isMockMode =
-  supabaseUrl?.includes("temp-mock") || !supabaseUrl || !supabaseAnonKey;
+  supabaseUrl?.includes("temp-mock") ||
+  supabaseUrl?.includes("your_supabase_project_url") ||
+  supabaseAnonKey?.includes("your_supabase_anon_key") ||
+  supabaseAnonKey === "mock-key" ||
+  !supabaseUrl ||
+  !supabaseAnonKey;
 
 if (!supabaseUrl || !supabaseAnonKey) {
   console.warn(
