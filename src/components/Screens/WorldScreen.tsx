@@ -1,6 +1,15 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Home, Sparkles, Globe, Star, Rocket, Zap } from "lucide-react";
+import {
+  X,
+  Home,
+  Sparkles,
+  Globe,
+  Star,
+  Rocket,
+  Zap,
+  Target,
+} from "lucide-react";
 import { useGameStore } from "../../store/gameStore";
 
 interface InteractivePoint {
@@ -92,6 +101,16 @@ const interactivePoints: InteractivePoint[] = [
 export const WorldScreen: React.FC = () => {
   const [mapPosition, setMapPosition] = useState({ x: 0, y: 0 });
   const { setCurrentScreen } = useGameStore();
+  const mapRef = useRef<HTMLDivElement>(null);
+
+  const centerMap = () => {
+    if (mapRef.current) {
+      // Reset the map position to center
+      setMapPosition({ x: 0, y: 0 });
+      // Also reset the actual transform of the element
+      mapRef.current.style.transform = "translate3d(0px, 0px, 0px)";
+    }
+  };
 
   const handlePointClick = (point: InteractivePoint) => {
     // Create a serializable version of the point data
@@ -211,6 +230,7 @@ export const WorldScreen: React.FC = () => {
 
         {/* Draggable Map Container */}
         <motion.div
+          ref={mapRef}
           className="absolute inset-0 cursor-grab active:cursor-grabbing"
           drag
           dragElastic={0.1}
@@ -334,6 +354,20 @@ export const WorldScreen: React.FC = () => {
             <span>Arraste para explorar</span>
           </div>
         </motion.div>
+
+        {/* Center Map Button */}
+        <motion.button
+          onClick={centerMap}
+          className="absolute top-4 right-4 bg-black/60 backdrop-blur-sm text-white p-3 rounded-full border border-white/20 hover:bg-black/80 transition-colors"
+          initial={{ opacity: 0, x: 20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: 1.2 }}
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
+          title="Voltar ao centro"
+        >
+          <Target className="w-5 h-5" />
+        </motion.button>
 
         {/* Points Counter */}
         <motion.div
