@@ -246,8 +246,6 @@ export const StoreScreen: React.FC = () => {
                 alt="Xenocash"
                 className="w-6 h-6"
               />
-            )}
-                />
                 <span className="font-medium">{cash}</span>
               </div>
             </div>
