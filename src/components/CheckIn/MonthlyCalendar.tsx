@@ -155,10 +155,11 @@ export const MonthlyCalendar: React.FC<MonthlyCalendarProps> = ({
     try {
       setClaimingDay(day);
 
-      // Claim the reward
-      dailyCheckin();
+      // Update last check-in date (mark as claimed)
+      const today = new Date().toDateString();
+      localStorage.setItem("lastCheckin", today);
 
-      // Give the actual reward
+      // Give the actual reward (only calendar reward, no fixed bonus)
       if (reward.type === "xenocoins" || reward.type === "special") {
         await updateCurrency("xenocoins", reward.amount || 0);
       } else if (reward.type === "cash") {
