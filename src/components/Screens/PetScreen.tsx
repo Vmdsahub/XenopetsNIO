@@ -22,6 +22,7 @@ export const PetScreen: React.FC = () => {
     setSelectedEggForHatching,
     clearSelectedEggForHatching,
     setIsHatchingInProgress,
+    clearHatchingEgg,
   } = useGameStore();
 
   const [isLoading, setIsLoading] = useState(false);
@@ -29,11 +30,13 @@ export const PetScreen: React.FC = () => {
   const handleEggSelected = (egg: any) => {
     setSelectedEggForHatching(egg);
     setIsHatchingInProgress(true);
+    // Note: setHatchingEgg will be called by EggHatchingView when it initializes
   };
 
   const handleHatchComplete = () => {
     clearSelectedEggForHatching();
     setIsHatchingInProgress(false);
+    clearHatchingEgg();
     // The egg hatching component will handle pet creation
   };
 
