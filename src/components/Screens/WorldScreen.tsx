@@ -681,7 +681,7 @@ export const WorldScreen: React.FC = () => {
                           <img
                             src="https://cdn.builder.io/api/v1/image/assets%2Ff481900009a94cda953c032479392a30%2F3e6c6cb85c6a4d2ba05acb245bfbc214?format=webp&width=800"
                             alt="Xenocoins"
-                            className="w-4 h-4"
+                            className="w-5 h-5"
                           />
                           <span className="font-medium">
                             {xenocoins.toLocaleString()}
@@ -691,7 +691,7 @@ export const WorldScreen: React.FC = () => {
                           <img
                             src="https://cdn.builder.io/api/v1/image/assets%2Ff481900009a94cda953c032479392a30%2F8bb45b10e920461dae796f0f945a1b33?format=webp&width=800"
                             alt="Xenocash"
-                            className="w-4 h-4"
+                            className="w-5 h-5"
                           />
                           <span className="font-medium">{cash}</span>
                         </div>
@@ -921,13 +921,13 @@ const ShopItemComponent: React.FC<{
             <img
               src="https://cdn.builder.io/api/v1/image/assets%2Ff481900009a94cda953c032479392a30%2F3e6c6cb85c6a4d2ba05acb245bfbc214?format=webp&width=800"
               alt="Xenocoins"
-              className="w-5 h-5"
+              className="w-6 h-6"
             />
           ) : (
             <img
               src="https://cdn.builder.io/api/v1/image/assets%2Ff481900009a94cda953c032479392a30%2F8bb45b10e920461dae796f0f945a1b33?format=webp&width=800"
               alt="Xenocash"
-              className="w-5 h-5"
+              className="w-6 h-6"
             />
           )}
           <span className="font-bold text-lg">{shopItem.price}</span>
