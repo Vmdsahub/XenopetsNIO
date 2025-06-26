@@ -318,6 +318,17 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({
             </div>
           </div>
 
+          {/* Captcha */}
+          <div className="flex justify-center">
+            <ReCAPTCHA
+              ref={recaptchaRef}
+              sitekey="6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI" // Test key - replace with your actual site key
+              onChange={(value) => setCaptchaValue(value)}
+              onExpired={() => setCaptchaValue(null)}
+              theme="light"
+            />
+          </div>
+
           {/* Terms and Conditions */}
           <div>
             <label className="flex items-start space-x-3">
