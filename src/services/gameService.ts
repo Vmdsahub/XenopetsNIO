@@ -349,9 +349,14 @@ export class GameService {
 
       if (error) throw error;
 
+      if (!data) {
+        console.warn(`No currency data found for user ${userId}`);
+        return { xenocoins: 0, cash: 0 };
+      }
+
       return {
-        xenocoins: data.xenocoins,
-        cash: data.cash,
+        xenocoins: data.xenocoins || 0,
+        cash: data.cash || 0,
       };
     } catch (error) {
       console.error("Error fetching currency:", error);
