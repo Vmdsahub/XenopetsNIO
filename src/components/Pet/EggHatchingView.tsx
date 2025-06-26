@@ -17,23 +17,37 @@ export const EggHatchingView: React.FC<EggHatchingViewProps> = ({
   eggData,
   onHatchComplete,
 }) => {
-  const [timeRemaining, setTimeRemaining] = useState(180); // 3 minutes in seconds
   const [isHatching, setIsHatching] = useState(false);
-  const { addNotification, createPet, user } = useGameStore();
+  const {
+    addNotification,
+    createPet,
+    user,
+    hatchingEgg,
+    setHatchingEgg,
+    getHatchingTimeRemaining,
+  } = useGameStore();
+
+  // Initialize hatching egg if not already set
+  useEffect(() => {
+    if (!hatchingEgg) {
+      setHatchingEgg(eggData);
+    }
+  }, [eggData, hatchingEgg, setHatchingEgg]);
+
+  // Calculate time remaining from global store
+  const timeRemainingMs = getHatchingTimeRemaining();
+  const timeRemaining = Math.ceil(timeRemainingMs / 1000); // Convert to seconds
 
   useEffect(() => {
     const timer = setInterval(() => {
-      setTimeRemaining((prev) => {
-        if (prev <= 1) {
-          setIsHatching(true);
-          return 0;
-        }
-        return prev - 1;
-      });
+      const remaining = getHatchingTimeRemaining();
+      if (remaining <= 0 && !isHatching) {
+        setIsHatching(true);
+      }
     }, 1000);
 
     return () => clearInterval(timer);
-  }, []);
+  }, [getHatchingTimeRemaining, isHatching]);
 
   useEffect(() => {
     if (isHatching) {
@@ -48,6 +62,8 @@ export const EggHatchingView: React.FC<EggHatchingViewProps> = ({
 
   const handlePetHatch = async () => {
     if (!user) return;
+
+    const { clearHatchingEgg } = useGameStore.getState();
 
     // Create the pet with random name and the egg's bonuses
     const petNames = [
@@ -92,6 +108,9 @@ export const EggHatchingView: React.FC<EggHatchingViewProps> = ({
     });
 
     if (newPet) {
+      // Clear the hatching state from global store
+      clearHatchingEgg();
+
       addNotification({
         type: "success",
         title: "🎉 Seu pet nasceu!",
@@ -111,7 +130,14 @@ export const EggHatchingView: React.FC<EggHatchingViewProps> = ({
     return `${mins}:${secs.toString().padStart(2, "0")}`;
   };
 
-  const progressPercentage = ((180 - timeRemaining) / 180) * 100;
+  const totalHatchingTime = 3 * 60; // 3 minutes in seconds
+  const progressPercentage = Math.max(
+    0,
+    Math.min(
+      100,
+      ((totalHatchingTime - timeRemaining) / totalHatchingTime) * 100,
+    ),
+  );
 
   return (
     <div className="max-w-md mx-auto text-center">
