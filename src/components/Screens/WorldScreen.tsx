@@ -8,8 +8,6 @@ import {
   MessageSquare,
   ShoppingCart,
   X,
-  Coins,
-  DollarSign,
   User,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";

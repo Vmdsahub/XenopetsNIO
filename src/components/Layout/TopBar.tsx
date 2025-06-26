@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Bell, Coins, X, Check, Trash2, Calendar } from "lucide-react";
+import { Bell, X, Check, Trash2, Calendar } from "lucide-react";
 import { useGameStore } from "../../store/gameStore";
 import { motion, AnimatePresence } from "framer-motion";
 import { MonthlyCalendar } from "../CheckIn/MonthlyCalendar";
